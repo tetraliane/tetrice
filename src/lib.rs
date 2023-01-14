@@ -1,3 +1,9 @@
+mod field;
+mod tetrimino;
+
+use field::Field;
+use tetrimino::{Shape, Tetrimino};
+
 pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
@@ -6,8 +12,8 @@ pub struct Game {
 impl Game {
     pub fn new(width: usize, height: usize, selector: Box<dyn Fn() -> Shape>) -> Self {
         Game {
-            field: Field { width, height },
-            tetrimino: Tetrimino { shape: selector() }
+            field: Field::new(width, height),
+            tetrimino: Tetrimino::new(selector())
         }
     }
 
@@ -17,81 +23,6 @@ impl Game {
 
     pub fn tetrimino(&self) -> &Tetrimino {
         &self.tetrimino
-    }
-}
-
-pub struct Field {
-    width: usize,
-    height: usize,
-}
-
-impl Field {
-    pub fn width(&self) -> usize {
-        self.width
-    }
-
-    pub fn height(&self) -> usize {
-        self.height
-    }
-
-    pub fn get_color(&self, _: usize, _: usize) -> Option<String> {
-        None
-    }
-}
-
-pub struct Tetrimino {
-    shape: Shape,
-}
-
-impl Tetrimino {
-    pub fn blocks(&self) -> [(usize, usize); 4] {
-        self.shape.blocks()
-    }
-
-    pub fn color(&self) -> &str {
-        self.shape.color()
-    }
-}
-
-const SHAPES: [([(usize, usize); 4], &str); 7] = [
-    ([(0, 0), (1, 0), (0, 1), (1, 1)], "yellow"),
-    ([(0, 0), (1, 0), (2, 0), (3, 0)], "lightblue"),
-    ([(0, 0), (1, 0), (1, 1), (2, 1)], "red"),
-    ([(1, 0), (2, 0), (0, 1), (1, 1)], "green"),
-    ([(1, 0), (1, 1), (1, 2), (2, 2)], "orange"),
-    ([(1, 0), (0, 1), (1, 1), (2, 1)], "purple"),
-    ([(1, 0), (1, 1), (0, 2), (1, 2)], "blue"),
-];
-
-pub enum Shape {
-    O,
-    I,
-    Z,
-    S,
-    L,
-    T,
-    J,
-}
-
-impl Shape {
-    fn data(&self) -> ([(usize, usize); 4], &str) {
-        match &self {
-            Self::O => SHAPES[0],
-            Self::I => SHAPES[1],
-            Self::S => SHAPES[2],
-            Self::Z => SHAPES[3],
-            Self::L => SHAPES[4],
-            Self::T => SHAPES[5],
-            Self::J => SHAPES[6],
-        }
-    }
-
-    fn blocks(&self) -> [(usize, usize); 4] {
-        self.data().0
-    }
-
-    fn color(&self) -> &str {
-        self.data().1
     }
 }
 
