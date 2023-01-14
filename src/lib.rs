@@ -27,6 +27,10 @@ impl Field {
     pub fn height(&self) -> usize {
         self.height
     }
+
+    pub fn get_color(&self, _: usize, _: usize) -> Option<String> {
+        None
+    }
 }
 
 #[cfg(test)]
@@ -39,5 +43,12 @@ mod tests {
         let field = game.field();
         assert_eq!(field.width(), 10);
         assert_eq!(field.height(), 20);
+    }
+
+    #[test]
+    fn set_none_to_every_cells() {
+        let game = Game::new(10, 20);
+        let field = game.field();
+        assert_eq!(field.get_color(1, 2), None);
     }
 }
