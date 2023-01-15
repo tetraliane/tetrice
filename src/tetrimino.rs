@@ -4,8 +4,8 @@ pub struct Tetrimino {
 }
 
 impl Tetrimino {
-    pub(crate) fn new(shape: Shape, pos: (isize, isize)) -> Self {
-        Self { shape, pos }
+    pub(crate) fn new(shape: Shape) -> Self {
+        Self { shape, pos: (0, 0) }
     }
 
     pub fn blocks(&self) -> [(isize, isize); 4] {
@@ -38,7 +38,10 @@ impl Tetrimino {
     }
 
     fn _move(&self, pos: (isize, isize)) -> Self {
-        Self { shape: self.shape, pos }
+        Self {
+            shape: self.shape,
+            pos,
+        }
     }
 
     pub(crate) fn move_to(&self, (left, top): (isize, isize)) -> Self {

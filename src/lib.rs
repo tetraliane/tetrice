@@ -14,7 +14,7 @@ impl Game {
     pub fn new(width: usize, height: usize, selector: Box<dyn Fn() -> Shape>) -> Self {
         let mut game = Game {
             field: Field::new(width, height),
-            tetrimino: Tetrimino::new(selector(), (0, 0)),
+            tetrimino: Tetrimino::new(selector()),
             selector,
         };
         game.init_pos();
@@ -109,7 +109,7 @@ mod tests {
     fn do_not_go_through_border() {
         let mut game = Game {
             field: crate::Field::new(10, 20),
-            tetrimino: crate::Tetrimino::new(Shape::T, (0, 0)),
+            tetrimino: crate::Tetrimino::new(Shape::T).move_to((0, 0)),
             selector: Box::new(|| Shape::T),
         };
         game.move_left();
