@@ -80,6 +80,12 @@ impl Game {
     pub fn hard_drop(&mut self) {
         self.tetrimino = self.ghost();
     }
+
+    pub fn save(&mut self) {
+        for pos in self.tetrimino.blocks() {
+            self.field.set(&pos, self.tetrimino.color());
+        }
+    }
 }
 
 const DISTANCE_NEAR: isize = 2;
@@ -256,6 +262,24 @@ mod tests {
     fn hard_drop_tetrimino() {
         let mut game = make_game();
         game.hard_drop();
-        assert_eq!(game.tetrimino().blocks(), [(4, 18), (3, 19), (4, 19), (5, 19)])
+        assert_eq!(
+            game.tetrimino().blocks(),
+            [(4, 18), (3, 19), (4, 19), (5, 19)]
+        )
+    }
+
+    #[test]
+    fn save_tetrimino() {
+        let mut game = make_game();
+        game.hard_drop();
+        game.save();
+        assert_eq!(
+            game.field().as_vec()[17..],
+            [
+                [""; 10],
+                ["", "", "", "", "purple", "", "", "", "", ""],
+                ["", "", "", "purple", "purple", "purple", "", "", "", ""],
+            ]
+        );
     }
 }

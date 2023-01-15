@@ -20,7 +20,7 @@ impl Tetrimino {
             .map(|(x, y)| (x as isize + self.pos.0, y as isize + self.pos.1))
     }
 
-    pub fn color(&self) -> &str {
+    pub fn color(&self) -> &'static str {
         self.shape.color()
     }
 
@@ -136,7 +136,7 @@ pub enum Shape {
 }
 
 impl Shape {
-    fn data(&self) -> (&[[(usize, usize); 4]], &str) {
+    fn data(&self) -> (&[[(usize, usize); 4]], &'static str) {
         match &self {
             Self::O => SHAPES[0],
             Self::I => SHAPES[1],
@@ -156,7 +156,7 @@ impl Shape {
         self.data().0[rot]
     }
 
-    fn color(&self) -> &str {
+    fn color(&self) -> &'static str {
         self.data().1
     }
 }

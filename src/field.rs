@@ -13,6 +13,10 @@ impl Field {
         Self { state }
     }
 
+    pub fn as_vec(&self) -> &[Vec<&str>] {
+        &self.state[HEIGHT_NEG..]
+    }
+
     pub fn width(&self) -> usize {
         self.state[0].len()
     }
@@ -29,5 +33,11 @@ impl Field {
             let y = (y + HEIGHT_NEG as isize) as usize;
             self.state.get(y).and_then(|row| row.get(x).map(|c| *c))
         }
+    }
+
+    pub(crate) fn set(&mut self, (x, y): &(isize, isize), color: &'static str) {
+        let x = *x as usize;
+        let y = (y + HEIGHT_NEG as isize) as usize;
+        self.state[y][x] = color;
     }
 }
