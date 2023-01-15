@@ -25,6 +25,13 @@ impl Game {
         game
     }
 
+    fn init_pos(&mut self) {
+        self.tetrimino = self.tetrimino.move_to((
+            (self.field.width() - self.tetrimino.width()) as isize / 2,
+            -1 * self.tetrimino.height() as isize,
+        ))
+    }
+
     pub fn field(&self) -> &Field {
         &self.field
     }
@@ -33,11 +40,24 @@ impl Game {
         &self.tetrimino
     }
 
-    fn init_pos(&mut self) {
-        self.tetrimino = self.tetrimino.move_to((
-            (self.field.width() - self.tetrimino.width()) as isize / 2,
-            -1 * self.tetrimino.height() as isize,
-        ))
+    pub fn ghost(&self) -> Tetrimino {
+        let bottom = *self
+            .tetrimino
+            .blocks()
+            .iter()
+            .map(|(_, y)| y)
+            .min()
+            .unwrap();
+        let dist_down = self.field.height() as isize - bottom;
+        (0..dist_down)
+            .rev()
+            .map(|dist_y| self.tetrimino.move_down(dist_y))
+            .find(|t| {
+                touching_down(&self.field, t)
+                    && !overlapping(&self.field, t)
+                    && route_exists(&self.field, &self.tetrimino, t)
+            })
+            .unwrap()
     }
 
     pub fn move_left(&mut self) {
@@ -65,26 +85,6 @@ impl Game {
         if let Some(t) = result {
             self.tetrimino = t;
         }
-    }
-
-    pub fn ghost(&self) -> Tetrimino {
-        let bottom = *self
-            .tetrimino
-            .blocks()
-            .iter()
-            .map(|(_, y)| y)
-            .min()
-            .unwrap();
-        let dist_down = self.field.height() as isize - bottom;
-        (0..dist_down)
-            .rev()
-            .map(|dist_y| self.tetrimino.move_down(dist_y))
-            .find(|t| {
-                touching_down(&self.field, t)
-                    && !overlapping(&self.field, t)
-                    && route_exists(&self.field, &self.tetrimino, t)
-            })
-            .unwrap()
     }
 
     pub fn hard_drop(&mut self) {
