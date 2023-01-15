@@ -1,13 +1,13 @@
 pub struct Field {
-    state: Vec<Vec<Option<&'static str>>>,
+    state: Vec<Vec<&'static str>>,
 }
 
 impl Field {
     pub(crate) fn new(width: usize, height: usize) -> Self {
-        Self::from_vec(vec![vec![None; width]; height])
+        Self::from_vec(vec![vec![""; width]; height])
     }
 
-    pub(crate) fn from_vec(state: Vec<Vec<Option<&'static str>>>) -> Self {
+    pub(crate) fn from_vec(state: Vec<Vec<&'static str>>) -> Self {
         Self { state }
     }
 
@@ -19,7 +19,7 @@ impl Field {
         self.state.len()
     }
 
-    pub fn get_color(&self, _: usize, _: usize) -> Option<&str> {
-        Some("")
+    pub fn get_color(&self, x: usize, y: usize) -> Option<&str> {
+        self.state.get(y).and_then(|row| row.get(x).map(|c| *c))
     }
 }
