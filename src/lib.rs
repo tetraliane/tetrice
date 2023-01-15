@@ -199,7 +199,9 @@ mod tests {
 
     #[test]
     fn do_not_go_through_other_blocks() {
-        let field = vec![vec!["", "", "", ""], vec!["red", "", "", ""]];
+        // 7 is the height of the negative area
+        let mut field = vec![vec![""; 4]; 7 + 1];
+        field.push(vec!["red", "", "", ""]);
         let mut game = Game {
             field: crate::Field::from_vec(field),
             tetrimino: crate::Tetrimino::new(Shape::T).move_to((1, 0)),
@@ -221,7 +223,8 @@ mod tests {
 
     #[test]
     fn move_tetrimino_not_to_overlap_after_rotation() {
-        let field = vec![vec!["", "", ""]; 9];
+        // 7 is the height of the negative area
+        let field = vec![vec![""; 3]; 7 + 2];
         let mut game = Game {
             field: crate::Field::from_vec(field),
             tetrimino: crate::Tetrimino::new(Shape::T).move_to((0, 0)),
