@@ -85,6 +85,13 @@ mod tests {
     }
 
     #[test]
+    fn return_some_for_points_above_the_field() {
+        let game = make_game();
+        let field = game.field();
+        assert_eq!(field.get_color((1, -2)), Some(""));
+    }
+
+    #[test]
     fn create_a_tetrimino() {
         let game = make_game();
         let tetrimino = game.tetrimino();
