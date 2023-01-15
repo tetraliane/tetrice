@@ -76,6 +76,10 @@ impl Game {
             .find(|t| route_exists(&self.field, &self.tetrimino, t))
             .unwrap()
     }
+
+    pub fn hard_drop(&mut self) {
+        self.tetrimino = self.ghost();
+    }
 }
 
 const DISTANCE_NEAR: isize = 2;
@@ -246,5 +250,12 @@ mod tests {
         };
         let ghost = game.ghost();
         assert_eq!(ghost.blocks(), [(4, 2), (3, 3), (4, 3), (5, 3)]);
+    }
+
+    #[test]
+    fn hard_drop_tetrimino() {
+        let mut game = make_game();
+        game.hard_drop();
+        assert_eq!(game.tetrimino().blocks(), [(4, 18), (3, 19), (4, 19), (5, 19)])
     }
 }
