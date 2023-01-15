@@ -48,10 +48,14 @@ impl Game {
 mod tests {
     use crate::{Game, Shape};
 
+    fn make_game() -> Game {
+        let selector = Box::new(|| Shape::T);
+        Game::new(10, 20, selector)
+    }
+
     #[test]
     fn create_10x20_field() {
-        let selector = Box::new(|| Shape::T);
-        let game = Game::new(10, 20, selector);
+        let game = make_game();
         let field = game.field();
         assert_eq!(field.width(), 10);
         assert_eq!(field.height(), 20);
@@ -59,16 +63,14 @@ mod tests {
 
     #[test]
     fn set_none_to_every_cells() {
-        let selector = Box::new(|| Shape::T);
-        let game = Game::new(10, 20, selector);
+        let game = make_game();
         let field = game.field();
         assert_eq!(field.get_color(1, 2), None);
     }
 
     #[test]
     fn create_a_tetrimino() {
-        let selector = Box::new(|| Shape::T);
-        let game = Game::new(10, 20, selector);
+        let game = make_game();
         let tetrimino = game.tetrimino();
         assert_eq!(
             game.tetrimino().blocks(),
@@ -79,8 +81,7 @@ mod tests {
 
     #[test]
     fn move_tetrimino() {
-        let selector = Box::new(|| Shape::T);
-        let mut game = Game::new(10, 20, selector);
+        let mut game = make_game();
         game.move_left();
         assert_eq!(
             game.tetrimino().blocks(),
