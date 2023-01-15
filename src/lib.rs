@@ -36,18 +36,34 @@ impl Game {
         ))
     }
 
+    fn _check_block_existence(&self, map: Box<dyn Fn(&(isize, isize)) -> (isize, isize)>) -> bool {
+        self.tetrimino
+            .blocks()
+            .iter()
+            .any(|pos| self.field.get_color(map(pos)) != Some(""))
+    }
+    fn touching_left(&self) -> bool {
+        self._check_block_existence(Box::new(|(x, y)| (x - 1, *y)))
+    }
+    fn touching_right(&self) -> bool {
+        self._check_block_existence(Box::new(|(x, y)| (x + 1, *y)))
+    }
+    fn touching_down(&self) -> bool {
+        self._check_block_existence(Box::new(|(x, y)| (*x, y + 1)))
+    }
+
     pub fn move_left(&mut self) {
-        if self.tetrimino.left() > 0 {
+        if !self.touching_left() {
             self.tetrimino = self.tetrimino.move_left();
         }
     }
     pub fn move_right(&mut self) {
-        if self.tetrimino.right() < self.field.width() as isize - 1 {
+        if !self.touching_right() {
             self.tetrimino = self.tetrimino.move_right();
         }
     }
     pub fn soft_drop(&mut self) {
-        if self.tetrimino.bottom() < self.field.height() as isize - 1 {
+        if !self.touching_down() {
             self.tetrimino = self.tetrimino.move_down();
         }
     }
@@ -128,5 +144,17 @@ mod tests {
         };
         game.move_left();
         assert_eq!(game.tetrimino().blocks(), [(1, 0), (0, 1), (1, 1), (2, 1)]);
+    }
+
+    #[test]
+    fn do_not_go_through_other_blocks() {
+        let field = vec![vec!["", "", "", ""], vec!["red", "", "", ""]];
+        let mut game = Game {
+            field: crate::Field::from_vec(field),
+            tetrimino: crate::Tetrimino::new(Shape::T).move_to((1, 0)),
+            selector: Box::new(|| Shape::T),
+        };
+        game.move_left();
+        assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, 1), (2, 1), (3, 1)]);
     }
 }
