@@ -28,28 +28,26 @@ impl Tetrimino {
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
 
+    fn _move(&self, pos: (isize, isize)) -> Self {
+        Self { shape: self.shape, pos }
+    }
+
     pub(crate) fn move_to(&self, (left, top): (isize, isize)) -> Self {
         let blocks = self.blocks();
         let current_left = blocks.iter().map(|(x, _)| x).min().unwrap();
         let current_top = blocks.iter().map(|(_, y)| y).min().unwrap();
         let diff = (left - current_left, top - current_top);
-        Self {
-            shape: self.shape,
-            pos: (self.pos.0 + diff.0, self.pos.1 + diff.1),
-        }
+        self._move((self.pos.0 + diff.0, self.pos.1 + diff.1))
     }
 
     pub(crate) fn move_left(&self) -> Self {
-        Self {
-            shape: self.shape,
-            pos: (self.pos.0 - 1, self.pos.1),
-        }
+        self._move((self.pos.0 - 1, self.pos.1))
     }
     pub(crate) fn move_right(&self) -> Self {
-        Self {
-            shape: self.shape,
-            pos: (self.pos.0 + 1, self.pos.1),
-        }
+        self._move((self.pos.0 + 1, self.pos.1))
+    }
+    pub(crate) fn move_down(&self) -> Self {
+        self._move((self.pos.0, self.pos.1 + 1))
     }
 }
 

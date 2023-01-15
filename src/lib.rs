@@ -42,6 +42,9 @@ impl Game {
     pub fn move_right(&mut self) {
         self.tetrimino = self.tetrimino.move_right();
     }
+    pub fn soft_drop(&mut self) {
+        self.tetrimino = self.tetrimino.move_down();
+    }
 }
 
 #[cfg(test)]
@@ -87,5 +90,12 @@ mod tests {
             game.tetrimino().blocks(),
             [(3, -2), (2, -1), (3, -1), (4, -1)]
         )
+    }
+
+    #[test]
+    fn soft_drop() {
+        let mut game = make_game();
+        game.soft_drop();
+        assert_eq!(game.tetrimino().blocks(), [(4, -1), (3, 0), (4, 0), (5, 0)])
     }
 }
