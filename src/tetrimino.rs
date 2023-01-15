@@ -48,14 +48,14 @@ impl Tetrimino {
         self._move((self.pos.0 + diff.0, self.pos.1 + diff.1))
     }
 
-    pub(crate) fn move_left(&self) -> Self {
-        self._move((self.pos.0 - 1, self.pos.1))
+    pub(crate) fn move_left(&self, dist: isize) -> Self {
+        self._move((self.pos.0 - dist, self.pos.1))
     }
-    pub(crate) fn move_right(&self) -> Self {
-        self._move((self.pos.0 + 1, self.pos.1))
+    pub(crate) fn move_right(&self, dist: isize) -> Self {
+        self._move((self.pos.0 + dist, self.pos.1))
     }
-    pub(crate) fn move_down(&self) -> Self {
-        self._move((self.pos.0, self.pos.1 + 1))
+    pub(crate) fn move_down(&self, dist: isize) -> Self {
+        self._move((self.pos.0, self.pos.1 + dist))
     }
 
     pub(crate) fn rotate(&self) -> Self {

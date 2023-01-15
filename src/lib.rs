@@ -1,8 +1,17 @@
 mod field;
 mod tetrimino;
 
+use std::cmp::Ordering;
+
 use field::Field;
 use tetrimino::{Shape, Tetrimino};
+
+fn overlapping(field: &Field, tetrimino: &Tetrimino) -> bool {
+    tetrimino
+        .blocks()
+        .iter()
+        .any(|pos| field.get_color(*pos) != Some(""))
+}
 
 pub struct Game {
     field: Field,
@@ -54,22 +63,60 @@ impl Game {
 
     pub fn move_left(&mut self) {
         if !self.touching_left() {
-            self.tetrimino = self.tetrimino.move_left();
+            self.tetrimino = self.tetrimino.move_left(1);
         }
     }
     pub fn move_right(&mut self) {
         if !self.touching_right() {
-            self.tetrimino = self.tetrimino.move_right();
+            self.tetrimino = self.tetrimino.move_right(1);
         }
     }
     pub fn soft_drop(&mut self) {
         if !self.touching_down() {
-            self.tetrimino = self.tetrimino.move_down();
+            self.tetrimino = self.tetrimino.move_down(1);
         }
     }
 
     pub fn rotate(&mut self) {
-        self.tetrimino = self.tetrimino.rotate();
+        let new_tetrimino = self.tetrimino.rotate();
+        let result = near_points()
+            .iter()
+            .map(|p| new_tetrimino.move_right(p.0).move_down(p.1))
+            .find(|t| !overlapping(&self.field, t));
+        if let Some(t) = result {
+            self.tetrimino = t;
+        }
+    }
+}
+
+const DISTANCE_NEAR: isize = 2;
+
+// Return points "near" the given vector, sorting them by pointIsPrior.
+fn near_points() -> Vec<(isize, isize)> {
+    let mut points: Vec<(isize, isize)> = (-DISTANCE_NEAR..=DISTANCE_NEAR)
+        .flat_map(|x| (-DISTANCE_NEAR..=DISTANCE_NEAR).map(move |y| (x, y)))
+        .collect();
+    points.sort_by(point_is_prior);
+    points
+}
+
+fn point_is_prior(point: &(isize, isize), other: &(isize, isize)) -> Ordering {
+    let dist1 = point.0.pow(2) + point.1.pow(2);
+    let dist2 = other.0.pow(2) + other.1.pow(2);
+    if point == other {
+        Ordering::Equal
+    } else if dist1 == dist2 {
+        if (point.1 == other.1 && point.0 > 0) || (point.1 != other.1 && point.1 > other.1) {
+            Ordering::Greater
+        } else {
+            Ordering::Less
+        }
+    } else {
+        if dist1 > dist2 {
+            Ordering::Greater
+        } else {
+            Ordering::Less
+        }
     }
 }
 
@@ -170,5 +217,17 @@ mod tests {
             game.tetrimino().blocks(),
             [(5, -1), (4, -2), (4, -1), (4, 0)]
         )
+    }
+
+    #[test]
+    fn move_tetrimino_not_to_overlap_after_rotation() {
+        let field = vec![vec!["", "", ""]; 9];
+        let mut game = Game {
+            field: crate::Field::from_vec(field),
+            tetrimino: crate::Tetrimino::new(Shape::T).move_to((0, 0)),
+            selector: Box::new(|| Shape::T),
+        };
+        game.rotate();
+        assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, -1), (1, 0), (1, 1)]);
     }
 }
