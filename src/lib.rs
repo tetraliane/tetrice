@@ -68,12 +68,22 @@ impl Game {
     }
 
     pub fn ghost(&self) -> Tetrimino {
-        (0..27)
+        let bottom = *self
+            .tetrimino
+            .blocks()
+            .iter()
+            .map(|(_, y)| y)
+            .min()
+            .unwrap();
+        let dist_down = self.field.height() as isize - bottom;
+        (0..dist_down)
             .rev()
             .map(|dist_y| self.tetrimino.move_down(dist_y))
-            .filter(|t| touching_down(&self.field, t))
-            .filter(|t| !overlapping(&self.field, t))
-            .find(|t| route_exists(&self.field, &self.tetrimino, t))
+            .find(|t| {
+                touching_down(&self.field, t)
+                    && !overlapping(&self.field, t)
+                    && route_exists(&self.field, &self.tetrimino, t)
+            })
             .unwrap()
     }
 
