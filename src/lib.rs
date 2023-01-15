@@ -11,6 +11,7 @@ pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
     selector: Box<dyn FnMut() -> Shape>,
+    is_end: bool,
 }
 
 impl Game {
@@ -19,6 +20,7 @@ impl Game {
             field: Field::new(width, height),
             tetrimino: Tetrimino::new(selector()),
             selector,
+            is_end: false,
         };
         game.init_pos();
         game
@@ -59,6 +61,10 @@ impl Game {
             .unwrap()
     }
 
+    pub fn is_end(&self) -> bool {
+        return self.is_end;
+    }
+
     pub fn move_left(&mut self) {
         if !judge::touching_left(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_left(1);
@@ -93,6 +99,10 @@ impl Game {
     pub fn save(&mut self) {
         for pos in self.tetrimino.blocks() {
             self.field.set(&pos, self.tetrimino.color());
+        }
+        let bottom = self.tetrimino.blocks().iter().map(|(_, y)| *y).min().unwrap();
+        if bottom < 0 {
+            self.is_end = true;
         }
         self.tetrimino = Tetrimino::new((self.selector)());
         self.init_pos();
@@ -298,5 +308,14 @@ mod tests {
             game.tetrimino().blocks(),
             [(3, -2), (3, -1), (4, -1), (5, -1)]
         );
+    }
+
+    #[test]
+    fn end_when_saved_tetrimino_is_out_of_visible_area() {
+        let mut game = make_game();
+        game.field = crate::Field::from_vec(vec![vec![""; 10]; 7]);
+
+        game.save();
+        assert!(game.is_end());
     }
 }
