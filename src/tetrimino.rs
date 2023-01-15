@@ -27,6 +27,17 @@ impl Tetrimino {
         let blocks = self.shape.blocks().map(|(_, y)| y);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
+
+    pub(crate) fn move_to(&self, (left, top): (isize, isize)) -> Self {
+        let blocks = self.blocks();
+        let current_left = blocks.iter().map(|(x, _)| x).min().unwrap();
+        let current_top = blocks.iter().map(|(_, y)| y).min().unwrap();
+        let diff = (left - current_left, top - current_top);
+        Self {
+            shape: self.shape,
+            pos: (self.pos.0 + diff.0, self.pos.1 + diff.1),
+        }
+    }
 }
 
 const SHAPES: [([(usize, usize); 4], &str); 7] = [
@@ -39,6 +50,7 @@ const SHAPES: [([(usize, usize); 4], &str); 7] = [
     ([(1, 0), (1, 1), (0, 2), (1, 2)], "blue"),
 ];
 
+#[derive(Clone, Copy)]
 pub enum Shape {
     O,
     I,

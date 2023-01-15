@@ -30,13 +30,10 @@ impl Game {
     }
 
     fn init_pos(&mut self) {
-        self.tetrimino = Tetrimino::new(
-            (self.selector)(),
-            (
-                (self.field.width() - self.tetrimino.width()) as isize / 2,
-                -1 * self.tetrimino.height() as isize,
-            ),
-        )
+        self.tetrimino = self.tetrimino.move_to((
+            (self.field.width() - self.tetrimino.width()) as isize / 2,
+            -1 * self.tetrimino.height() as isize,
+        ))
     }
 }
 
