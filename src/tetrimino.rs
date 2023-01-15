@@ -38,6 +38,19 @@ impl Tetrimino {
             pos: (self.pos.0 + diff.0, self.pos.1 + diff.1),
         }
     }
+
+    pub(crate) fn move_left(&self) -> Self {
+        Self {
+            shape: self.shape,
+            pos: (self.pos.0 - 1, self.pos.1),
+        }
+    }
+    pub(crate) fn move_right(&self) -> Self {
+        Self {
+            shape: self.shape,
+            pos: (self.pos.0 + 1, self.pos.1),
+        }
+    }
 }
 
 const SHAPES: [([(usize, usize); 4], &str); 7] = [

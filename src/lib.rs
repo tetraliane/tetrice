@@ -35,6 +35,13 @@ impl Game {
             -1 * self.tetrimino.height() as isize,
         ))
     }
+
+    pub fn move_left(&mut self) {
+        self.tetrimino = self.tetrimino.move_left();
+    }
+    pub fn move_right(&mut self) {
+        self.tetrimino = self.tetrimino.move_right();
+    }
 }
 
 #[cfg(test)]
@@ -68,5 +75,16 @@ mod tests {
             [(4, -2), (3, -1), (4, -1), (5, -1)]
         );
         assert_eq!(tetrimino.color(), "purple");
+    }
+
+    #[test]
+    fn move_tetrimino() {
+        let selector = Box::new(|| Shape::T);
+        let mut game = Game::new(10, 20, selector);
+        game.move_left();
+        assert_eq!(
+            game.tetrimino().blocks(),
+            [(3, -2), (2, -1), (3, -1), (4, -1)]
+        )
     }
 }
