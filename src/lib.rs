@@ -85,6 +85,8 @@ impl Game {
         for pos in self.tetrimino.blocks() {
             self.field.set(&pos, self.tetrimino.color());
         }
+        self.tetrimino = Tetrimino::new((self.selector)());
+        self.init_pos();
     }
 }
 
@@ -280,6 +282,10 @@ mod tests {
                 ["", "", "", "", "purple", "", "", "", "", ""],
                 ["", "", "", "purple", "purple", "purple", "", "", "", ""],
             ]
+        );
+        assert_eq!(
+            game.tetrimino().blocks(),
+            [(4, -2), (3, -1), (4, -1), (5, -1)]
         );
     }
 }
