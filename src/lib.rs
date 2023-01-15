@@ -11,11 +11,11 @@ use tetrimino::{Shape, Tetrimino};
 pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
-    selector: Box<dyn Fn() -> Shape>,
+    selector: Box<dyn FnMut() -> Shape>,
 }
 
 impl Game {
-    pub fn new(width: usize, height: usize, selector: Box<dyn Fn() -> Shape>) -> Self {
+    pub fn new(width: usize, height: usize, mut selector: Box<dyn FnMut() -> Shape>) -> Self {
         let mut game = Game {
             field: Field::new(width, height),
             tetrimino: Tetrimino::new(selector()),
@@ -126,7 +126,15 @@ mod tests {
     use crate::{Game, Shape};
 
     fn make_game() -> Game {
-        let selector = Box::new(|| Shape::T);
+        let mut count = 0;
+        let selector = Box::new(move || {
+            count += 1;
+            if count == 1 {
+                Shape::T
+            } else {
+                Shape::L
+            }
+        });
         Game::new(10, 20, selector)
     }
 
@@ -283,9 +291,10 @@ mod tests {
                 ["", "", "", "purple", "purple", "purple", "", "", "", ""],
             ]
         );
+        // L-tetrimino is generated
         assert_eq!(
             game.tetrimino().blocks(),
-            [(4, -2), (3, -1), (4, -1), (5, -1)]
+            [(3, -2), (3, -1), (4, -1), (5, -1)]
         );
     }
 }
