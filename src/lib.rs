@@ -71,10 +71,10 @@ mod tests {
     }
 
     #[test]
-    fn set_none_to_every_cells() {
+    fn set_empty_string_to_every_cells() {
         let game = make_game();
         let field = game.field();
-        assert_eq!(field.get_color(1, 2), None);
+        assert_eq!(field.get_color(1, 2), Some(""));
     }
 
     #[test]

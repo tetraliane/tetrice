@@ -19,7 +19,7 @@ impl Field {
         self.state.len()
     }
 
-    pub fn get_color(&self, _: usize, _: usize) -> Option<String> {
-        None
+    pub fn get_color(&self, _: usize, _: usize) -> Option<&str> {
+        Some("")
     }
 }
