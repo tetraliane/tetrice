@@ -206,11 +206,9 @@ mod tests {
 
     #[test]
     fn do_not_go_through_border() {
-        let mut game = Game {
-            field: crate::Field::new(10, 20),
-            tetrimino: crate::Tetrimino::new(Shape::T).move_to((0, 0)),
-            selector: Box::new(|| Shape::T),
-        };
+        let mut game = make_game();
+        game.tetrimino = crate::Tetrimino::new(Shape::T).move_to((0, 0));
+
         game.move_left();
         assert_eq!(game.tetrimino().blocks(), [(1, 0), (0, 1), (1, 1), (2, 1)]);
     }
@@ -220,11 +218,10 @@ mod tests {
         // 7 is the height of the negative area
         let mut field = vec![vec![""; 4]; 7 + 1];
         field.push(vec!["red", "", "", ""]);
-        let mut game = Game {
-            field: crate::Field::from_vec(field),
-            tetrimino: crate::Tetrimino::new(Shape::T).move_to((1, 0)),
-            selector: Box::new(|| Shape::T),
-        };
+        let mut game = make_game();
+        game.field = crate::Field::from_vec(field);
+        game.tetrimino = crate::Tetrimino::new(Shape::T).move_to((1, 0));
+
         game.move_left();
         assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, 1), (2, 1), (3, 1)]);
     }
@@ -242,12 +239,10 @@ mod tests {
     #[test]
     fn move_tetrimino_not_to_overlap_after_rotation() {
         // 7 is the height of the negative area
-        let field = vec![vec![""; 3]; 7 + 2];
-        let mut game = Game {
-            field: crate::Field::from_vec(field),
-            tetrimino: crate::Tetrimino::new(Shape::T).move_to((0, 0)),
-            selector: Box::new(|| Shape::T),
-        };
+        let mut game = make_game();
+        game.field = crate::Field::from_vec(vec![vec![""; 3]; 7 + 2]);
+        game.tetrimino = crate::Tetrimino::new(Shape::T);
+
         game.rotate();
         assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, -1), (1, 0), (1, 1)]);
     }
@@ -262,17 +257,15 @@ mod tests {
     #[test]
     fn ghost_may_jump_over_blocks() {
         // 7 is the height of the negative area
-        let field = [
+        let field_state = [
             vec![vec![""; 10]; 7],
             vec![vec!["", "", "", "red", "red", "red", "", "", "", ""]],
             vec![vec![""; 10]; 3],
         ]
         .concat();
-        let game = Game {
-            field: crate::Field::from_vec(field),
-            tetrimino: crate::Tetrimino::new(Shape::T).move_to((3, -2)),
-            selector: Box::new(|| Shape::T),
-        };
+        let mut game = make_game();
+        game.field = crate::Field::from_vec(field_state);
+
         let ghost = game.ghost();
         assert_eq!(ghost.blocks(), [(4, 2), (3, 3), (4, 3), (5, 3)]);
     }
