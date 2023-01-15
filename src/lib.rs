@@ -67,6 +67,10 @@ impl Game {
             self.tetrimino = self.tetrimino.move_down();
         }
     }
+
+    pub fn rotate(&mut self) {
+        self.tetrimino = self.tetrimino.rotate();
+    }
 }
 
 #[cfg(test)]
@@ -156,5 +160,15 @@ mod tests {
         };
         game.move_left();
         assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, 1), (2, 1), (3, 1)]);
+    }
+
+    #[test]
+    fn rotate_tetrimino() {
+        let mut game = make_game();
+        game.rotate();
+        assert_eq!(
+            game.tetrimino().blocks(),
+            [(5, -1), (4, -2), (4, -1), (4, 0)]
+        )
     }
 }
