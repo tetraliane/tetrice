@@ -37,13 +37,19 @@ impl Game {
     }
 
     pub fn move_left(&mut self) {
-        self.tetrimino = self.tetrimino.move_left();
+        if self.tetrimino.left() > 0 {
+            self.tetrimino = self.tetrimino.move_left();
+        }
     }
     pub fn move_right(&mut self) {
-        self.tetrimino = self.tetrimino.move_right();
+        if self.tetrimino.right() < self.field.width() as isize - 1 {
+            self.tetrimino = self.tetrimino.move_right();
+        }
     }
     pub fn soft_drop(&mut self) {
-        self.tetrimino = self.tetrimino.move_down();
+        if self.tetrimino.bottom() < self.field.height() as isize - 1 {
+            self.tetrimino = self.tetrimino.move_down();
+        }
     }
 }
 
@@ -97,5 +103,16 @@ mod tests {
         let mut game = make_game();
         game.soft_drop();
         assert_eq!(game.tetrimino().blocks(), [(4, -1), (3, 0), (4, 0), (5, 0)])
+    }
+
+    #[test]
+    fn do_not_go_through_border() {
+        let mut game = Game {
+            field: crate::Field::new(10, 20),
+            tetrimino: crate::Tetrimino::new(Shape::T, (0, 0)),
+            selector: Box::new(|| Shape::T),
+        };
+        game.move_left();
+        assert_eq!(game.tetrimino().blocks(), [(1, 0), (0, 1), (1, 1), (2, 1)]);
     }
 }

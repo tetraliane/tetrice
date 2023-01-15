@@ -22,10 +22,19 @@ impl Tetrimino {
         let blocks = self.shape.blocks().map(|(x, _)| x);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
-
     pub(crate) fn height(&self) -> usize {
         let blocks = self.shape.blocks().map(|(_, y)| y);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
+    }
+
+    pub(crate) fn left(&self) -> isize {
+        self.blocks().iter().map(|(x, _)| *x).min().unwrap()
+    }
+    pub(crate) fn right(&self) -> isize {
+        self.blocks().iter().map(|(x, _)| *x).max().unwrap()
+    }
+    pub(crate) fn bottom(&self) -> isize {
+        self.blocks().iter().map(|(_, y)| *y).max().unwrap()
     }
 
     fn _move(&self, pos: (isize, isize)) -> Self {
