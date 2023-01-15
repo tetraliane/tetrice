@@ -78,6 +78,13 @@ mod tests {
     }
 
     #[test]
+    fn return_none_for_outside_points() {
+        let game = make_game();
+        let field = game.field();
+        assert_eq!(field.get_color(-1, 2), None);
+    }
+
+    #[test]
     fn create_a_tetrimino() {
         let game = make_game();
         let tetrimino = game.tetrimino();

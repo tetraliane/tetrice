@@ -19,7 +19,13 @@ impl Field {
         self.state.len()
     }
 
-    pub fn get_color(&self, x: usize, y: usize) -> Option<&str> {
-        self.state.get(y).and_then(|row| row.get(x).map(|c| *c))
+    pub fn get_color(&self, x: isize, y: isize) -> Option<&str> {
+        if x < 0 || y < 0 {
+            None
+        } else {
+            let x = x as usize;
+            let y = y as usize;
+            self.state.get(y).and_then(|row| row.get(x).map(|c| *c))
+        }
     }
 }
