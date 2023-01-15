@@ -74,14 +74,14 @@ mod tests {
     fn set_empty_string_to_every_cells() {
         let game = make_game();
         let field = game.field();
-        assert_eq!(field.get_color(1, 2), Some(""));
+        assert_eq!(field.get_color((1, 2)), Some(""));
     }
 
     #[test]
     fn return_none_for_outside_points() {
         let game = make_game();
         let field = game.field();
-        assert_eq!(field.get_color(-1, 2), None);
+        assert_eq!(field.get_color((-1, 2)), None);
     }
 
     #[test]

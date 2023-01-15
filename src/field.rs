@@ -19,7 +19,7 @@ impl Field {
         self.state.len()
     }
 
-    pub fn get_color(&self, x: isize, y: isize) -> Option<&str> {
+    pub fn get_color(&self, (x, y): (isize, isize)) -> Option<&str> {
         if x < 0 || y < 0 {
             None
         } else {
