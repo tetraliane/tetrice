@@ -1,18 +1,31 @@
 pub struct Tetrimino {
     shape: Shape,
+    pos: (isize, isize),
 }
 
 impl Tetrimino {
-    pub(crate) fn new(shape: Shape) -> Self {
-        Self { shape }
+    pub(crate) fn new(shape: Shape, pos: (isize, isize)) -> Self {
+        Self { shape, pos }
     }
 
-    pub fn blocks(&self) -> [(usize, usize); 4] {
-        self.shape.blocks()
+    pub fn blocks(&self) -> [(isize, isize); 4] {
+        self.shape
+            .blocks()
+            .map(|(x, y)| (x as isize + self.pos.0, y as isize + self.pos.1))
     }
 
     pub fn color(&self) -> &str {
         self.shape.color()
+    }
+
+    pub(crate) fn width(&self) -> usize {
+        let blocks = self.shape.blocks().map(|(x, _)| x);
+        (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
+    }
+
+    pub(crate) fn height(&self) -> usize {
+        let blocks = self.shape.blocks().map(|(_, y)| y);
+        (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
 }
 

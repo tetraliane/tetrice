@@ -7,13 +7,15 @@ use tetrimino::{Shape, Tetrimino};
 pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
+    selector: Box<dyn Fn() -> Shape>,
 }
 
 impl Game {
     pub fn new(width: usize, height: usize, selector: Box<dyn Fn() -> Shape>) -> Self {
         Game {
             field: Field::new(width, height),
-            tetrimino: Tetrimino::new(selector())
+            tetrimino: Tetrimino::new(selector(), (0, 0)),
+            selector,
         }
     }
 
@@ -23,6 +25,16 @@ impl Game {
 
     pub fn tetrimino(&self) -> &Tetrimino {
         &self.tetrimino
+    }
+
+    pub fn init(&mut self) {
+        self.tetrimino = Tetrimino::new(
+            (self.selector)(),
+            (
+                (self.field.width() - self.tetrimino.width()) as isize / 2,
+                -1 * self.tetrimino.height() as isize,
+            ),
+        )
     }
 }
 
@@ -54,5 +66,16 @@ mod tests {
         let tetrimino = game.tetrimino();
         assert_eq!(tetrimino.blocks(), [(1, 0), (0, 1), (1, 1), (2, 1)]);
         assert_eq!(tetrimino.color(), "purple");
+    }
+
+    #[test]
+    fn locate_tetrimino_at_center() {
+        let selector = Box::new(|| Shape::T);
+        let mut game = Game::new(10, 20, selector);
+        game.init();
+        assert_eq!(
+            game.tetrimino().blocks(),
+            [(4, -2), (3, -1), (4, -1), (5, -1)]
+        );
     }
 }
