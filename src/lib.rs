@@ -1,17 +1,12 @@
 mod field;
+mod judge;
 mod tetrimino;
 
 use std::cmp::Ordering;
 
 use field::Field;
+use judge::{overlapping, touching_down, touching_left, touching_right};
 use tetrimino::{Shape, Tetrimino};
-
-fn overlapping(field: &Field, tetrimino: &Tetrimino) -> bool {
-    tetrimino
-        .blocks()
-        .iter()
-        .any(|pos| field.get_color(*pos) != Some(""))
-}
 
 pub struct Game {
     field: Field,
@@ -45,34 +40,18 @@ impl Game {
         ))
     }
 
-    fn _check_block_existence(&self, map: Box<dyn Fn(&(isize, isize)) -> (isize, isize)>) -> bool {
-        self.tetrimino
-            .blocks()
-            .iter()
-            .any(|pos| self.field.get_color(map(pos)) != Some(""))
-    }
-    fn touching_left(&self) -> bool {
-        self._check_block_existence(Box::new(|(x, y)| (x - 1, *y)))
-    }
-    fn touching_right(&self) -> bool {
-        self._check_block_existence(Box::new(|(x, y)| (x + 1, *y)))
-    }
-    fn touching_down(&self) -> bool {
-        self._check_block_existence(Box::new(|(x, y)| (*x, y + 1)))
-    }
-
     pub fn move_left(&mut self) {
-        if !self.touching_left() {
+        if !touching_left(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_left(1);
         }
     }
     pub fn move_right(&mut self) {
-        if !self.touching_right() {
+        if !touching_right(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_right(1);
         }
     }
     pub fn soft_drop(&mut self) {
-        if !self.touching_down() {
+        if !touching_down(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_down(1);
         }
     }
