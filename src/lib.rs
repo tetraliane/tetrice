@@ -66,6 +66,13 @@ impl Game {
             self.tetrimino = t;
         }
     }
+
+    pub fn ghost(&self) -> Tetrimino {
+        (0..)
+            .map(|dist_y| self.tetrimino.move_down(dist_y))
+            .find(|t| touching_down(&self.field, t))
+            .unwrap()
+    }
 }
 
 const DISTANCE_NEAR: isize = 2;
@@ -211,5 +218,12 @@ mod tests {
         };
         game.rotate();
         assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, -1), (1, 0), (1, 1)]);
+    }
+
+    #[test]
+    fn create_ghost() {
+        let game = make_game();
+        let ghost = game.ghost();
+        assert_eq!(ghost.blocks(), [(4, 18), (3, 19), (4, 19), (5, 19)]);
     }
 }
