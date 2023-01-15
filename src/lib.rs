@@ -5,7 +5,7 @@ mod tetrimino;
 use std::cmp::Ordering;
 
 use field::Field;
-use judge::{overlapping, touching_down, touching_left, touching_right};
+use judge::{overlapping, route_exists, touching_down, touching_left, touching_right};
 use tetrimino::{Shape, Tetrimino};
 
 pub struct Game {
@@ -57,7 +57,7 @@ impl Game {
     }
 
     pub fn rotate(&mut self) {
-        let new_tetrimino = self.tetrimino.rotate();
+        let new_tetrimino = self.tetrimino.rotate(1);
         let result = near_points()
             .iter()
             .map(|p| new_tetrimino.move_right(p.0).move_down(p.1))
@@ -68,9 +68,12 @@ impl Game {
     }
 
     pub fn ghost(&self) -> Tetrimino {
-        (0..)
+        (0..27)
+            .rev()
             .map(|dist_y| self.tetrimino.move_down(dist_y))
-            .find(|t| touching_down(&self.field, t))
+            .filter(|t| touching_down(&self.field, t))
+            .filter(|t| !overlapping(&self.field, t))
+            .find(|t| route_exists(&self.field, &self.tetrimino, t))
             .unwrap()
     }
 }
@@ -225,5 +228,23 @@ mod tests {
         let game = make_game();
         let ghost = game.ghost();
         assert_eq!(ghost.blocks(), [(4, 18), (3, 19), (4, 19), (5, 19)]);
+    }
+
+    #[test]
+    fn ghost_may_jump_over_blocks() {
+        // 7 is the height of the negative area
+        let field = [
+            vec![vec![""; 10]; 7],
+            vec![vec!["", "", "", "red", "red", "red", "", "", "", ""]],
+            vec![vec![""; 10]; 3],
+        ]
+        .concat();
+        let game = Game {
+            field: crate::Field::from_vec(field),
+            tetrimino: crate::Tetrimino::new(Shape::T).move_to((3, -2)),
+            selector: Box::new(|| Shape::T),
+        };
+        let ghost = game.ghost();
+        assert_eq!(ghost.blocks(), [(4, 2), (3, 3), (4, 3), (5, 3)]);
     }
 }

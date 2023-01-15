@@ -1,3 +1,4 @@
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Tetrimino {
     shape: Shape,
     rot: usize,
@@ -58,10 +59,10 @@ impl Tetrimino {
         self._move((self.pos.0, self.pos.1 + dist))
     }
 
-    pub(crate) fn rotate(&self) -> Self {
+    pub(crate) fn rotate(&self, times: usize) -> Self {
         Self {
             shape: self.shape,
-            rot: (self.rot + 1) % self.shape.num_rot(),
+            rot: (self.rot + times) % self.shape.num_rot(),
             pos: self.pos,
         }
     }
@@ -123,7 +124,7 @@ const SHAPES: [(&[[(usize, usize); 4]], &str); 7] = [
     ),
 ];
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Shape {
     O,
     I,
