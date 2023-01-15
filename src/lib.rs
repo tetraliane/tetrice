@@ -42,13 +42,7 @@ impl Game {
     }
 
     pub fn ghost(&self) -> Tetrimino {
-        let bottom = *self
-            .tetrimino
-            .blocks()
-            .iter()
-            .map(|(_, y)| y)
-            .min()
-            .unwrap();
+        let bottom = self.tetrimino.bottom();
         let dist_down = self.field.height() as isize - bottom;
         (0..dist_down)
             .rev()
@@ -100,8 +94,7 @@ impl Game {
         for pos in self.tetrimino.blocks() {
             self.field.set(&pos, self.tetrimino.color());
         }
-        let bottom = self.tetrimino.blocks().iter().map(|(_, y)| *y).min().unwrap();
-        if bottom < 0 {
+        if self.tetrimino.bottom() < 0 {
             self.is_end = true;
         }
         self.tetrimino = Tetrimino::new((self.selector)());

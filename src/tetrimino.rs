@@ -33,6 +33,10 @@ impl Tetrimino {
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
 
+    pub(crate) fn bottom(&self) -> isize {
+        self.blocks().iter().map(|(_, y)| *y).min().unwrap()
+    }
+
     fn _move(&self, pos: (isize, isize)) -> Self {
         Self {
             shape: self.shape,
