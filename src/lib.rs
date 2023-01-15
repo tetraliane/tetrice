@@ -5,7 +5,6 @@ mod tetrimino;
 use std::cmp::Ordering;
 
 use field::Field;
-use judge::{overlapping, route_exists, touching_down, touching_left, touching_right};
 use tetrimino::{Shape, Tetrimino};
 
 pub struct Game {
@@ -53,25 +52,25 @@ impl Game {
             .rev()
             .map(|dist_y| self.tetrimino.move_down(dist_y))
             .find(|t| {
-                touching_down(&self.field, t)
-                    && !overlapping(&self.field, t)
-                    && route_exists(&self.field, &self.tetrimino, t)
+                judge::touching_down(&self.field, t)
+                    && !judge::overlapping(&self.field, t)
+                    && judge::route_exists(&self.field, &self.tetrimino, t)
             })
             .unwrap()
     }
 
     pub fn move_left(&mut self) {
-        if !touching_left(&self.field, &self.tetrimino) {
+        if !judge::touching_left(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_left(1);
         }
     }
     pub fn move_right(&mut self) {
-        if !touching_right(&self.field, &self.tetrimino) {
+        if !judge::touching_right(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_right(1);
         }
     }
     pub fn soft_drop(&mut self) {
-        if !touching_down(&self.field, &self.tetrimino) {
+        if !judge::touching_down(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_down(1);
         }
     }
@@ -81,7 +80,7 @@ impl Game {
         let result = near_points()
             .iter()
             .map(|p| new_tetrimino.move_right(p.0).move_down(p.1))
-            .find(|t| !overlapping(&self.field, t));
+            .find(|t| !judge::overlapping(&self.field, t));
         if let Some(t) = result {
             self.tetrimino = t;
         }
