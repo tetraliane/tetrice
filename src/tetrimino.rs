@@ -147,6 +147,18 @@ pub enum Shape {
 }
 
 impl Shape {
+    pub fn all_as_array() -> [Self; 7] {
+        [
+            Shape::O,
+            Shape::I,
+            Shape::Z,
+            Shape::S,
+            Shape::L,
+            Shape::T,
+            Shape::J,
+        ]
+    }
+
     fn data(&self) -> (&[[(usize, usize); 4]], &'static str) {
         match &self {
             Self::O => SHAPES[0],
