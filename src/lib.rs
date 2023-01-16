@@ -19,6 +19,7 @@ pub struct Game {
     selector: Box<dyn FnMut() -> Shape>,
     can_hold: bool,
     is_end: bool,
+    removed_lines: usize,
 }
 
 impl Game {
@@ -36,6 +37,7 @@ impl Game {
             selector,
             can_hold: true,
             is_end: false,
+            removed_lines: 0,
         };
         game.init_pos();
         game.queue
@@ -82,6 +84,10 @@ impl Game {
 
     pub fn is_end(&self) -> bool {
         return self.is_end;
+    }
+
+    pub fn removed_lines(&self) -> usize {
+        self.removed_lines
     }
 
     pub fn move_left(&mut self) {
@@ -155,7 +161,9 @@ impl Game {
         self.init_pos();
         self.can_hold = true;
 
-        self.field.remove_filled_lines()
+        let lines = self.field.remove_filled_lines();
+        self.removed_lines += lines;
+        lines
     }
 
     pub fn hold(&mut self) {

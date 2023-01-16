@@ -278,3 +278,22 @@ fn can_hold_again_after_save() {
     );
     assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::T).move_to((3, -2)));
 }
+
+#[test]
+fn have_sum_of_removed_lines() {
+    let mut game = make_game();
+    game.field = Field::from_vec(
+        [
+            vec![vec![""; 10]; 26],
+            vec![vec![
+                "red", "red", "red", "", "", "", "red", "red", "red", "red",
+            ]],
+        ]
+        .concat(),
+    );
+
+    assert_eq!(game.removed_lines(), 0);
+    game.hard_drop();
+    game.save();
+    assert_eq!(game.removed_lines(), 1);
+}
