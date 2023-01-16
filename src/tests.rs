@@ -72,6 +72,13 @@ fn create_queue_of_three_tetriminos() {
 }
 
 #[test]
+fn do_not_hold_any_tetrimino_at_first() {
+    let game = make_game();
+    let held = game.held();
+    assert!(held.is_none());
+}
+
+#[test]
 fn move_tetrimino() {
     let mut game = make_game();
     game.move_left();

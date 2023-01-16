@@ -58,6 +58,10 @@ impl Game {
         &self.queue
     }
 
+    pub fn held(&self) -> Option<Tetrimino> {
+        None
+    }
+
     pub fn ghost(&self) -> Tetrimino {
         let bottom = self.tetrimino.bottom();
         let dist_down = self.field.height() as isize - bottom;
