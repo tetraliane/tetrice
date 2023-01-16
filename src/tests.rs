@@ -174,3 +174,19 @@ fn end_when_saved_tetrimino_is_out_of_visible_area() {
     game.save();
     assert!(game.is_end());
 }
+
+#[test]
+fn stop_updating_after_end() {
+    let mut game = make_game();
+    game.is_end = true;
+
+    let expected = [(4, -2), (3, -1), (4, -1), (5, -1)];
+    game.move_left();
+    assert_eq!(game.tetrimino().blocks(), expected);
+    game.rotate();
+    assert_eq!(game.tetrimino().blocks(), expected);
+    game.hard_drop();
+    assert_eq!(game.tetrimino().blocks(), expected);
+    game.save();
+    assert_eq!(game.field().as_vec(), vec![vec![""; 10]; 20]);
+}

@@ -63,22 +63,38 @@ impl Game {
     }
 
     pub fn move_left(&mut self) {
+        if self.is_end {
+            return;
+        }
+
         if !judge::touching_left(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_left(1);
         }
     }
     pub fn move_right(&mut self) {
+        if self.is_end {
+            return;
+        }
+
         if !judge::touching_right(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_right(1);
         }
     }
     pub fn soft_drop(&mut self) {
+        if self.is_end {
+            return;
+        }
+
         if !judge::touching_down(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_down(1);
         }
     }
 
     pub fn rotate(&mut self) {
+        if self.is_end {
+            return;
+        }
+
         let new_tetrimino = self.tetrimino.rotate(1);
         let result = near_points()
             .iter()
@@ -90,10 +106,18 @@ impl Game {
     }
 
     pub fn hard_drop(&mut self) {
+        if self.is_end {
+            return;
+        }
+
         self.tetrimino = self.ghost();
     }
 
     pub fn save(&mut self) {
+        if self.is_end {
+            return;
+        }
+
         for pos in self.tetrimino.blocks() {
             self.field.set(&pos, self.tetrimino.color());
         }
