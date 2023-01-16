@@ -133,6 +133,11 @@ impl Game {
         self.tetrimino = self.ghost();
     }
 
+    fn shift_queue(&mut self) -> Tetrimino {
+        self.queue.push_back(Tetrimino::new((self.selector)()));
+        self.queue.pop_front().unwrap()
+    }
+
     pub fn save(&mut self) {
         if self.is_end {
             return;
@@ -144,8 +149,7 @@ impl Game {
         if self.tetrimino.bottom() < 0 {
             self.is_end = true;
         }
-        self.tetrimino = self.queue.pop_front().unwrap();
-        self.queue.push_back(Tetrimino::new((self.selector)()));
+        self.tetrimino = self.shift_queue();
         self.init_pos();
     }
 
@@ -154,8 +158,7 @@ impl Game {
         self.tetrimino = if let Some(current_held) = self.held.clone() {
             current_held
         } else {
-            self.queue.push_back(Tetrimino::new((self.selector)()));
-            self.queue.pop_front().unwrap()
+            self.shift_queue()
         };
         self.held = Some(new_held);
         self.init_pos();
