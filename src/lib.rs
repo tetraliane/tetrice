@@ -1,5 +1,5 @@
 mod field;
-mod judge;
+mod checker;
 mod tetrimino;
 
 #[cfg(test)]
@@ -9,6 +9,7 @@ use std::cmp::Ordering;
 use std::collections::VecDeque;
 
 use field::Field;
+use checker::Checker;
 use tetrimino::{Shape, Tetrimino};
 
 pub struct Game {
@@ -58,7 +59,7 @@ impl Game {
         ));
         let lowest = (0..5)
             .map(|dist_up| t.move_up(dist_up))
-            .find(|s| !judge::overlapping(&self.field, s));
+            .find(|s| !Checker(&self.field, s).overlap());
         if let Some(l) = lowest {
             self.tetrimino = l;
         }
@@ -87,11 +88,14 @@ impl Game {
             .rev()
             .map(|dist_y| self.tetrimino.move_down(dist_y))
             .find(|t| {
-                judge::touching_down(&self.field, t)
-                    && !judge::overlapping(&self.field, t)
-                    && judge::route_exists(&self.field, &self.tetrimino, t)
+                let check = Checker(&self.field, t);
+                check.touch_down() && !check.overlap() && check.route_from(&self.tetrimino)
             })
             .unwrap()
+    }
+
+    pub fn check(&self) -> Checker {
+        Checker(&self.field, &self.tetrimino)
     }
 
     pub fn is_end(&self) -> bool {
@@ -107,7 +111,7 @@ impl Game {
             return false;
         }
 
-        if !judge::touching_left(&self.field, &self.tetrimino) {
+        if !self.check().touch_left() {
             self.tetrimino = self.tetrimino.move_left(1);
             true
         } else {
@@ -119,7 +123,7 @@ impl Game {
             return false;
         }
 
-        if !judge::touching_right(&self.field, &self.tetrimino) {
+        if !self.check().touch_right() {
             self.tetrimino = self.tetrimino.move_right(1);
             true
         } else {
@@ -131,7 +135,7 @@ impl Game {
             return false;
         }
 
-        if !judge::touching_down(&self.field, &self.tetrimino) {
+        if !self.check().touch_down() {
             self.tetrimino = self.tetrimino.move_down(1);
             true
         } else {
@@ -148,7 +152,7 @@ impl Game {
         let result = near_points()
             .iter()
             .map(|p| new_tetrimino.move_right(p.0).move_down(p.1))
-            .find(|t| !judge::overlapping(&self.field, t));
+            .find(|t| !Checker(&self.field, t).overlap());
         if let Some(t) = result {
             self.tetrimino = t;
             true
