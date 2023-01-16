@@ -8,9 +8,9 @@ mod tests;
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 
-use field::Field;
-use checker::Checker;
-use tetrimino::{Shape, Tetrimino};
+pub use field::Field;
+pub use checker::Checker;
+pub use tetrimino::{Shape, Tetrimino};
 
 pub struct Game {
     field: Field,
