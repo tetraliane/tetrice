@@ -28,11 +28,11 @@ impl Tetrimino {
         self.shape.color()
     }
 
-    pub(crate) fn width(&self) -> usize {
+    pub fn width(&self) -> usize {
         let blocks = self.shape.blocks(self.rot).map(|(x, _)| x);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
-    pub(crate) fn height(&self) -> usize {
+    pub fn height(&self) -> usize {
         let blocks = self.shape.blocks(self.rot).map(|(_, y)| y);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
