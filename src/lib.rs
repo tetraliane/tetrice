@@ -15,6 +15,7 @@ pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
     queue: VecDeque<Tetrimino>,
+    held: Option<Tetrimino>,
     selector: Box<dyn FnMut() -> Shape>,
     is_end: bool,
 }
@@ -30,6 +31,7 @@ impl Game {
             field: Field::new(width, height),
             tetrimino: Tetrimino::new(selector()),
             queue: VecDeque::new(),
+            held: None,
             selector,
             is_end: false,
         };
@@ -59,7 +61,7 @@ impl Game {
     }
 
     pub fn held(&self) -> Option<Tetrimino> {
-        None
+        self.held.clone()
     }
 
     pub fn ghost(&self) -> Tetrimino {
@@ -144,6 +146,18 @@ impl Game {
         }
         self.tetrimino = self.queue.pop_front().unwrap();
         self.queue.push_back(Tetrimino::new((self.selector)()));
+        self.init_pos();
+    }
+
+    pub fn hold(&mut self) {
+        let new_held = self.tetrimino.move_to((0, 0));
+        self.tetrimino = if let Some(current_held) = self.held.clone() {
+            current_held
+        } else {
+            self.queue.push_back(Tetrimino::new((self.selector)()));
+            self.queue.pop_front().unwrap()
+        };
+        self.held = Some(new_held);
         self.init_pos();
     }
 }

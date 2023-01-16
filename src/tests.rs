@@ -215,3 +215,14 @@ fn stop_updating_after_end() {
     game.save();
     assert_eq!(game.field().as_vec(), vec![vec![""; 10]; 20]);
 }
+
+#[test]
+fn hold_tetrimino() {
+    let mut game = make_game();
+    game.hold();
+    assert_eq!(
+        game.held().unwrap(),
+        Tetrimino::new(Shape::T).move_to((0, 0))
+    );
+    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -2)));
+}
