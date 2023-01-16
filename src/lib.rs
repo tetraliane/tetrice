@@ -140,9 +140,9 @@ impl Game {
         self.queue.pop_front().unwrap()
     }
 
-    pub fn save(&mut self) {
+    pub fn save(&mut self) -> usize {
         if self.is_end {
-            return;
+            return 0;
         }
 
         for pos in self.tetrimino.blocks() {
@@ -155,7 +155,7 @@ impl Game {
         self.init_pos();
         self.can_hold = true;
 
-        self.field.remove_filled_lines();
+        self.field.remove_filled_lines()
     }
 
     pub fn hold(&mut self) {

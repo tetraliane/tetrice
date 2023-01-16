@@ -41,17 +41,17 @@ impl Field {
         self.state[y][x] = color;
     }
 
-    pub(crate) fn remove_filled_lines(&mut self) {
+    pub(crate) fn remove_filled_lines(&mut self) -> usize {
         let lines_not_filled: Vec<_> = self
             .state
             .iter()
             .filter(|line| !line.iter().all(|cell| *cell != ""))
             .map(|line| line.clone())
             .collect();
-        let count = lines_not_filled.len();
-        self.state = [
-            vec![vec![""; 10]; self.state.len() - count],
-            lines_not_filled,
-        ].concat()
+        let count = self.state.len() - lines_not_filled.len();
+
+        self.state = [vec![vec![""; 10]; count], lines_not_filled].concat();
+
+        count
     }
 }

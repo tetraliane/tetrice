@@ -205,11 +205,13 @@ fn remove_filled_lines_when_saving() {
     );
 
     game.hard_drop();
-    game.save();
-    assert_eq!(game.field().as_vec()[18..], [
-        [""; 10],
-        ["", "", "", "", "purple", "", "", "", "", ""],
-    ])
+    let result = game.save();
+    assert_eq!(
+        game.field().as_vec()[18..],
+        [[""; 10], ["", "", "", "", "purple", "", "", "", "", ""],]
+    );
+    // return how many lines are removed
+    assert_eq!(result, 1);
 }
 
 #[test]
