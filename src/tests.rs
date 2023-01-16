@@ -10,7 +10,7 @@ fn make_game() -> Game {
             Shape::L
         }
     });
-    Game::new(10, 20, selector)
+    Game::new(10, 20, 3, selector)
 }
 
 #[test]
@@ -51,6 +51,12 @@ fn create_a_tetrimino() {
         [(4, -2), (3, -1), (4, -1), (5, -1)]
     );
     assert_eq!(tetrimino.color(), "purple");
+}
+
+#[test]
+fn create_queue_of_three_tetriminos() {
+    let game = make_game();
+    assert_eq!(game.queue(), &vec![Tetrimino::new(Shape::L); 3])
 }
 
 #[test]

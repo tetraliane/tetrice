@@ -13,19 +13,28 @@ use tetrimino::{Shape, Tetrimino};
 pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
+    queue: Vec<Tetrimino>,
     selector: Box<dyn FnMut() -> Shape>,
     is_end: bool,
 }
 
 impl Game {
-    pub fn new(width: usize, height: usize, mut selector: Box<dyn FnMut() -> Shape>) -> Self {
+    pub fn new(
+        width: usize,
+        height: usize,
+        queue_size: usize,
+        mut selector: Box<dyn FnMut() -> Shape>,
+    ) -> Self {
         let mut game = Game {
             field: Field::new(width, height),
             tetrimino: Tetrimino::new(selector()),
+            queue: vec![],
             selector,
             is_end: false,
         };
         game.init_pos();
+        game.queue
+            .resize_with(queue_size, || Tetrimino::new((game.selector)()));
         game
     }
 
@@ -42,6 +51,10 @@ impl Game {
 
     pub fn tetrimino(&self) -> &Tetrimino {
         &self.tetrimino
+    }
+
+    pub fn queue(&self) -> &Vec<Tetrimino> {
+        &self.queue
     }
 
     pub fn ghost(&self) -> Tetrimino {
