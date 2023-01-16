@@ -17,6 +17,7 @@ pub struct Game {
     queue: VecDeque<Tetrimino>,
     held: Option<Tetrimino>,
     selector: Box<dyn FnMut() -> Shape>,
+    can_hold: bool,
     is_end: bool,
 }
 
@@ -33,6 +34,7 @@ impl Game {
             queue: VecDeque::new(),
             held: None,
             selector,
+            can_hold: true,
             is_end: false,
         };
         game.init_pos();
@@ -154,6 +156,10 @@ impl Game {
     }
 
     pub fn hold(&mut self) {
+        if !self.can_hold {
+            return;
+        }
+
         let new_held = self.tetrimino.move_to((0, 0));
         self.tetrimino = if let Some(current_held) = self.held.clone() {
             current_held
@@ -162,6 +168,7 @@ impl Game {
         };
         self.held = Some(new_held);
         self.init_pos();
+        self.can_hold = false;
     }
 }
 

@@ -226,3 +226,15 @@ fn hold_tetrimino() {
     );
     assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -2)));
 }
+
+#[test]
+fn do_not_hold_twice_without_saving() {
+    let mut game = make_game();
+    game.hold();
+    game.hold(); // actually doesn't hold
+    assert_eq!(
+        game.held().unwrap(),
+        Tetrimino::new(Shape::T).move_to((0, 0))
+    );
+    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -2)));
+}
