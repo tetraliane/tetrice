@@ -1,6 +1,7 @@
 use std::collections::{HashSet, VecDeque};
 
-use crate::{Field, Tetrimino};
+use crate::field::Field;
+use crate::tetrimino::Tetrimino;
 
 fn check_block_existence(
     field: &Field,

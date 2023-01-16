@@ -1,4 +1,4 @@
-use crate::{Game, Shape};
+use crate::{Game, tetrimino::{Tetrimino, Shape}, field::Field};
 
 fn make_game() -> Game {
     let mut count = 0;
@@ -73,7 +73,7 @@ fn soft_drop() {
 #[test]
 fn do_not_go_through_border() {
     let mut game = make_game();
-    game.tetrimino = crate::Tetrimino::new(Shape::T).move_to((0, 0));
+    game.tetrimino = Tetrimino::new(Shape::T).move_to((0, 0));
 
     game.move_left();
     assert_eq!(game.tetrimino().blocks(), [(1, 0), (0, 1), (1, 1), (2, 1)]);
@@ -85,8 +85,8 @@ fn do_not_go_through_other_blocks() {
     let mut field = vec![vec![""; 4]; 7 + 1];
     field.push(vec!["red", "", "", ""]);
     let mut game = make_game();
-    game.field = crate::Field::from_vec(field);
-    game.tetrimino = crate::Tetrimino::new(Shape::T).move_to((1, 0));
+    game.field = Field::from_vec(field);
+    game.tetrimino = Tetrimino::new(Shape::T).move_to((1, 0));
 
     game.move_left();
     assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, 1), (2, 1), (3, 1)]);
@@ -106,8 +106,8 @@ fn rotate_tetrimino() {
 fn move_tetrimino_not_to_overlap_after_rotation() {
     // 7 is the height of the negative area
     let mut game = make_game();
-    game.field = crate::Field::from_vec(vec![vec![""; 3]; 7 + 2]);
-    game.tetrimino = crate::Tetrimino::new(Shape::T);
+    game.field = Field::from_vec(vec![vec![""; 3]; 7 + 2]);
+    game.tetrimino = Tetrimino::new(Shape::T);
 
     game.rotate();
     assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, -1), (1, 0), (1, 1)]);
@@ -130,7 +130,7 @@ fn ghost_may_jump_over_blocks() {
     ]
     .concat();
     let mut game = make_game();
-    game.field = crate::Field::from_vec(field_state);
+    game.field = Field::from_vec(field_state);
 
     let ghost = game.ghost();
     assert_eq!(ghost.blocks(), [(4, 2), (3, 3), (4, 3), (5, 3)]);
@@ -169,7 +169,7 @@ fn save_tetrimino() {
 #[test]
 fn end_when_saved_tetrimino_is_out_of_visible_area() {
     let mut game = make_game();
-    game.field = crate::Field::from_vec(vec![vec![""; 10]; 7]);
+    game.field = Field::from_vec(vec![vec![""; 10]; 7]);
 
     game.save();
     assert!(game.is_end());
