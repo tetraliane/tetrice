@@ -177,7 +177,7 @@ impl Game {
             return;
         }
 
-        let new_held = self.tetrimino.move_to((0, 0));
+        let new_held = Tetrimino::new(self.tetrimino.shape()).move_to((0, 0));
         self.tetrimino = if let Some(current_held) = self.held.clone() {
             current_held
         } else {

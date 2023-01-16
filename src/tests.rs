@@ -268,6 +268,17 @@ fn hold_tetrimino() {
 }
 
 #[test]
+fn reset_rotation_when_holding() {
+    let mut game = make_game();
+    game.rotate();
+    game.hold();
+    assert_eq!(
+        game.held().unwrap(),
+        Tetrimino::new(Shape::T).move_to((0, 0))
+    );
+}
+
+#[test]
 fn do_not_hold_twice_without_saving() {
     let mut game = make_game();
     game.hold();

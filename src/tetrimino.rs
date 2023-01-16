@@ -14,6 +14,10 @@ impl Tetrimino {
         }
     }
 
+    pub(crate) fn shape(&self) -> Shape {
+        self.shape
+    }
+
     pub fn blocks(&self) -> [(isize, isize); 4] {
         self.shape
             .blocks(self.rot)
