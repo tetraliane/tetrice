@@ -95,18 +95,20 @@ fn do_not_hold_any_tetrimino_at_first() {
 #[test]
 fn move_tetrimino() {
     let mut game = make_game();
-    game.move_left();
+    let result = game.move_left();
     assert_eq!(
         game.tetrimino().blocks(),
         [(3, -2), (2, -1), (3, -1), (4, -1)]
-    )
+    );
+    assert_eq!(result, true);
 }
 
 #[test]
 fn soft_drop() {
     let mut game = make_game();
-    game.soft_drop();
-    assert_eq!(game.tetrimino().blocks(), [(4, -1), (3, 0), (4, 0), (5, 0)])
+    let result = game.soft_drop();
+    assert_eq!(game.tetrimino().blocks(), [(4, -1), (3, 0), (4, 0), (5, 0)]);
+    assert_eq!(result, true);
 }
 
 #[test]
@@ -114,8 +116,9 @@ fn do_not_go_through_border() {
     let mut game = make_game();
     game.tetrimino = Tetrimino::new(Shape::T).move_to((0, 0));
 
-    game.move_left();
+    let result = game.move_left();
     assert_eq!(game.tetrimino().blocks(), [(1, 0), (0, 1), (1, 1), (2, 1)]);
+    assert_eq!(result, false);
 }
 
 #[test]
@@ -127,18 +130,20 @@ fn do_not_go_through_other_blocks() {
     game.field = Field::from_vec(field);
     game.tetrimino = Tetrimino::new(Shape::T).move_to((1, 0));
 
-    game.move_left();
+    let result = game.move_left();
     assert_eq!(game.tetrimino().blocks(), [(2, 0), (1, 1), (2, 1), (3, 1)]);
+    assert_eq!(result, false);
 }
 
 #[test]
 fn rotate_tetrimino() {
     let mut game = make_game();
-    game.rotate();
+    let result = game.rotate();
     assert_eq!(
         game.tetrimino().blocks(),
         [(5, -1), (4, -2), (4, -1), (4, 0)]
-    )
+    );
+    assert_eq!(result, true);
 }
 
 #[test]

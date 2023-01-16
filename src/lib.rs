@@ -96,37 +96,46 @@ impl Game {
         self.removed_lines
     }
 
-    pub fn move_left(&mut self) {
+    pub fn move_left(&mut self) -> bool {
         if self.is_end {
-            return;
+            return false;
         }
 
         if !judge::touching_left(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_left(1);
+            true
+        } else {
+            false
         }
     }
-    pub fn move_right(&mut self) {
+    pub fn move_right(&mut self) -> bool {
         if self.is_end {
-            return;
+            return false;
         }
 
         if !judge::touching_right(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_right(1);
+            true
+        } else {
+            false
         }
     }
-    pub fn soft_drop(&mut self) {
+    pub fn soft_drop(&mut self) -> bool {
         if self.is_end {
-            return;
+            return false;
         }
 
         if !judge::touching_down(&self.field, &self.tetrimino) {
             self.tetrimino = self.tetrimino.move_down(1);
+            true
+        } else {
+            false
         }
     }
 
-    pub fn rotate(&mut self) {
+    pub fn rotate(&mut self) -> bool {
         if self.is_end {
-            return;
+            return false;
         }
 
         let new_tetrimino = self.tetrimino.rotate(1);
@@ -136,6 +145,9 @@ impl Game {
             .find(|t| !judge::overlapping(&self.field, t));
         if let Some(t) = result {
             self.tetrimino = t;
+            true
+        } else {
+            false
         }
     }
 
