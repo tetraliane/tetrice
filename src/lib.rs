@@ -153,6 +153,7 @@ impl Game {
         }
         self.tetrimino = self.shift_queue();
         self.init_pos();
+        self.can_hold = true;
     }
 
     pub fn hold(&mut self) {
