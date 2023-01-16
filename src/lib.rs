@@ -6,6 +6,7 @@ mod tetrimino;
 mod tests;
 
 use std::cmp::Ordering;
+use std::collections::VecDeque;
 
 use field::Field;
 use tetrimino::{Shape, Tetrimino};
@@ -13,7 +14,7 @@ use tetrimino::{Shape, Tetrimino};
 pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
-    queue: Vec<Tetrimino>,
+    queue: VecDeque<Tetrimino>,
     selector: Box<dyn FnMut() -> Shape>,
     is_end: bool,
 }
@@ -28,7 +29,7 @@ impl Game {
         let mut game = Game {
             field: Field::new(width, height),
             tetrimino: Tetrimino::new(selector()),
-            queue: vec![],
+            queue: VecDeque::new(),
             selector,
             is_end: false,
         };
@@ -53,7 +54,7 @@ impl Game {
         &self.tetrimino
     }
 
-    pub fn queue(&self) -> &Vec<Tetrimino> {
+    pub fn queue(&self) -> &VecDeque<Tetrimino> {
         &self.queue
     }
 
@@ -137,7 +138,8 @@ impl Game {
         if self.tetrimino.bottom() < 0 {
             self.is_end = true;
         }
-        self.tetrimino = Tetrimino::new((self.selector)());
+        self.tetrimino = self.queue.pop_front().unwrap();
+        self.queue.push_back(Tetrimino::new((self.selector)()));
         self.init_pos();
     }
 }

@@ -8,10 +8,11 @@ fn make_game() -> Game {
     let mut count = 0;
     let selector = Box::new(move || {
         count += 1;
-        if count == 1 {
-            Shape::T
-        } else {
-            Shape::L
+        match count {
+            1 => Shape::T,
+            2 => Shape::L,
+            3 => Shape::I,
+            _ => Shape::J,
         }
     });
     Game::new(10, 20, 3, selector)
@@ -60,7 +61,14 @@ fn create_a_tetrimino() {
 #[test]
 fn create_queue_of_three_tetriminos() {
     let game = make_game();
-    assert_eq!(game.queue(), &vec![Tetrimino::new(Shape::L); 3])
+    assert_eq!(
+        game.queue(),
+        &[
+            Tetrimino::new(Shape::L),
+            Tetrimino::new(Shape::I),
+            Tetrimino::new(Shape::J),
+        ]
+    )
 }
 
 #[test]
