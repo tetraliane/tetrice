@@ -192,6 +192,27 @@ fn save_tetrimino() {
 }
 
 #[test]
+fn remove_filled_lines_when_saving() {
+    let mut game = make_game();
+    game.field = Field::from_vec(
+        [
+            vec![vec![""; 10]; 26],
+            vec![vec![
+                "red", "red", "red", "", "", "", "red", "red", "red", "red",
+            ]],
+        ]
+        .concat(),
+    );
+
+    game.hard_drop();
+    game.save();
+    assert_eq!(game.field().as_vec()[18..], [
+        [""; 10],
+        ["", "", "", "", "purple", "", "", "", "", ""],
+    ])
+}
+
+#[test]
 fn end_when_saved_tetrimino_is_out_of_visible_area() {
     let mut game = make_game();
     game.field = Field::from_vec(vec![vec![""; 10]; 7]);

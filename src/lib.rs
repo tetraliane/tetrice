@@ -154,6 +154,8 @@ impl Game {
         self.tetrimino = self.shift_queue();
         self.init_pos();
         self.can_hold = true;
+
+        self.field.remove_filled_lines();
     }
 
     pub fn hold(&mut self) {
