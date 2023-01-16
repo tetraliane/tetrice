@@ -29,6 +29,12 @@ impl Game {
         queue_size: usize,
         mut selector: Box<dyn FnMut() -> Shape>,
     ) -> Self {
+        if width < 4 {
+            panic!("not enough width")
+        } else if height < 1 {
+            panic!("not enough height")
+        }
+
         let mut game = Game {
             field: Field::new(width, height),
             tetrimino: Tetrimino::new(selector()),

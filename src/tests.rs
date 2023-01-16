@@ -27,6 +27,20 @@ fn create_10x20_field() {
 }
 
 #[test]
+#[should_panic]
+fn width_must_be_4_or_more() {
+    let selector = Box::new(|| Shape::T);
+    Game::new(3, 20, 3, selector);
+}
+
+#[test]
+#[should_panic]
+fn height_must_be_1_or_more() {
+    let selector = Box::new(|| Shape::T);
+    Game::new(10, 0, 3, selector);
+}
+
+#[test]
 fn set_empty_string_to_every_cells() {
     let game = make_game();
     let field = game.field();
