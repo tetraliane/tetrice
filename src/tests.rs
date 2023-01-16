@@ -1,4 +1,8 @@
-use crate::{Game, tetrimino::{Tetrimino, Shape}, field::Field};
+use crate::{
+    field::Field,
+    tetrimino::{Shape, Tetrimino},
+    Game,
+};
 
 fn make_game() -> Game {
     let mut count = 0;
