@@ -73,6 +73,20 @@ fn create_a_tetrimino() {
 }
 
 #[test]
+fn locate_the_tetrimino_higher_when_it_overlaps() {
+    let mut game = make_game();
+    game.field = Field::from_vec([
+        vec![vec![""; 10]; 6],
+        vec![vec!["red"; 10]],
+        vec![vec![""; 10]; 20],
+    ].concat());
+    game.tetrimino = Tetrimino::new(Shape::T).move_to((3, 18));
+
+    game.save();
+    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -3)));
+}
+
+#[test]
 fn create_queue_of_three_tetriminos() {
     let game = make_game();
     assert_eq!(

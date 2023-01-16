@@ -63,6 +63,9 @@ impl Tetrimino {
     pub(crate) fn move_right(&self, dist: isize) -> Self {
         self._move((self.pos.0 + dist, self.pos.1))
     }
+    pub(crate) fn move_up(&self, dist: isize) -> Self {
+        self._move((self.pos.0, self.pos.1 - dist))
+    }
     pub(crate) fn move_down(&self, dist: isize) -> Self {
         self._move((self.pos.0, self.pos.1 + dist))
     }

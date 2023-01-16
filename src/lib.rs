@@ -52,10 +52,16 @@ impl Game {
     }
 
     fn init_pos(&mut self) {
-        self.tetrimino = self.tetrimino.move_to((
+        let t = self.tetrimino.move_to((
             (self.field.width() - self.tetrimino.width()) as isize / 2,
             -1 * self.tetrimino.height() as isize,
-        ))
+        ));
+        let lowest = (0..5)
+            .map(|dist_up| t.move_up(dist_up))
+            .find(|s| !judge::overlapping(&self.field, s));
+        if let Some(l) = lowest {
+            self.tetrimino = l;
+        }
     }
 
     pub fn field(&self) -> &Field {
