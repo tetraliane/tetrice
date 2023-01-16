@@ -157,7 +157,7 @@ impl Game {
     }
 
     pub fn hold(&mut self) {
-        if !self.can_hold {
+        if !self.can_hold || self.is_end {
             return;
         }
 

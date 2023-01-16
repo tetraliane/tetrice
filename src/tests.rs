@@ -214,6 +214,9 @@ fn stop_updating_after_end() {
     assert_eq!(game.tetrimino().blocks(), expected);
     game.save();
     assert_eq!(game.field().as_vec(), vec![vec![""; 10]; 20]);
+    game.hold();
+    assert_eq!(game.tetrimino().blocks(), expected);
+    assert!(game.held().is_none());
 }
 
 #[test]
