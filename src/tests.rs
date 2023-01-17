@@ -107,12 +107,23 @@ fn do_not_hold_any_tetrimino_at_first() {
 }
 
 #[test]
-fn move_tetrimino() {
+fn move_tetrimino_to_left() {
     let mut game = make_game();
     let result = game.move_left();
     assert_eq!(
         game.tetrimino().blocks(),
         [(3, -2), (2, -1), (3, -1), (4, -1)]
+    );
+    assert_eq!(result, true);
+}
+
+#[test]
+fn move_tetrimino_to_right() {
+    let mut game = make_game();
+    let result = game.move_right();
+    assert_eq!(
+        game.tetrimino().blocks(),
+        [(5, -2), (4, -1), (5, -1), (6, -1)]
     );
     assert_eq!(result, true);
 }
