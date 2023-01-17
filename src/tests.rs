@@ -4,9 +4,9 @@ use crate::{
     Game,
 };
 
-fn make_game() -> Game {
+fn make_selector() -> Box<dyn FnMut() -> Shape> {
     let mut count = 0;
-    let selector = Box::new(move || {
+    Box::new(move || {
         count += 1;
         match count {
             1 => Shape::T,
@@ -14,8 +14,11 @@ fn make_game() -> Game {
             3 => Shape::I,
             _ => Shape::J,
         }
-    });
-    Game::new(10, 20, 3, selector)
+    })
+}
+
+fn make_game() -> Game {
+    Game::new(10, 20, 3, make_selector())
 }
 
 #[test]
@@ -29,15 +32,13 @@ fn create_10x20_field() {
 #[test]
 #[should_panic]
 fn width_must_be_4_or_more() {
-    let selector = Box::new(|| Shape::T);
-    Game::new(3, 20, 3, selector);
+    Game::new(3, 20, 3, make_selector());
 }
 
 #[test]
 #[should_panic]
 fn height_must_be_1_or_more() {
-    let selector = Box::new(|| Shape::T);
-    Game::new(10, 0, 3, selector);
+    Game::new(10, 0, 3, make_selector());
 }
 
 #[test]
@@ -75,11 +76,14 @@ fn create_a_tetrimino() {
 #[test]
 fn locate_the_tetrimino_higher_when_it_overlaps() {
     let mut game = make_game();
-    game.field = Field::from_vec([
-        vec![vec![""; 10]; 6],
-        vec![vec!["red"; 10]],
-        vec![vec![""; 10]; 20],
-    ].concat());
+    game.field = Field::from_vec(
+        [
+            vec![vec![""; 10]; 6],
+            vec![vec!["red"; 10]],
+            vec![vec![""; 10]; 20],
+        ]
+        .concat(),
+    );
     game.tetrimino = Tetrimino::new(Shape::T).move_to((3, 18));
 
     game.save();
