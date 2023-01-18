@@ -382,3 +382,10 @@ fn make_list_of_all_shapes() {
         ])
     )
 }
+
+#[test]
+fn implement_debug() {
+    format!("{:?}", Shape::T);
+    format!("{:?}", Tetrimino::new(Shape::T));
+    format!("{:?}", Field::new(10, 20));
+}
