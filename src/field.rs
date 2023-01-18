@@ -1,5 +1,6 @@
 const HEIGHT_NEG: usize = 7;
 
+#[derive(Debug)]
 pub struct Field {
     state: Vec<Vec<&'static str>>,
 }
