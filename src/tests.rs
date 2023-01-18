@@ -284,6 +284,10 @@ fn stop_updating_after_end() {
     let expected = Tetrimino::new(Shape::T).move_to((3, -2));
     game.move_left();
     assert_eq!(game.tetrimino(), &expected);
+    game.move_right();
+    assert_eq!(game.tetrimino(), &expected);
+    game.soft_drop();
+    assert_eq!(game.tetrimino(), &expected);
     game.rotate();
     assert_eq!(game.tetrimino(), &expected);
     game.hard_drop();
