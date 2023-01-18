@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::{
     field::Field,
     tetrimino::{Shape, Tetrimino},
@@ -358,4 +360,21 @@ fn have_sum_of_removed_lines() {
     game.hard_drop();
     game.save();
     assert_eq!(game.removed_lines(), 1);
+}
+
+#[test]
+fn make_list_of_all_shapes() {
+    let result = Shape::all_as_array();
+    assert_eq!(
+        HashSet::from(result),
+        HashSet::from([
+            Shape::I,
+            Shape::J,
+            Shape::L,
+            Shape::O,
+            Shape::S,
+            Shape::T,
+            Shape::Z,
+        ])
+    )
 }
