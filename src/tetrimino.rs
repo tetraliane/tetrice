@@ -1,3 +1,4 @@
+/// A tetrimino consisting of four dropping blocks.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Tetrimino {
     shape: Shape,
@@ -18,20 +19,34 @@ impl Tetrimino {
         self.shape
     }
 
+    /// Get a list of positions of the all blocks consisting this tetrimino.
     pub fn blocks(&self) -> [(isize, isize); 4] {
         self.shape
             .blocks(self.rot)
             .map(|(x, y)| (x as isize + self.pos.0, y as isize + self.pos.1))
     }
 
+    /// Get the color.
+    ///
+    /// The color is determined by the shape:
+    /// - O-tetrimino → yellow
+    /// - I-tetrimino → lightblue
+    /// - Z-tetrimino → red,
+    /// - S-tetrimino → green,
+    /// - L-tetrimino → blue,
+    /// - T-tetrimino → purple,
+    /// - J-tetrimino → orange,
     pub fn color(&self) -> &'static str {
         self.shape.color()
     }
 
+    /// Get the width.
     pub fn width(&self) -> usize {
         let blocks = self.shape.blocks(self.rot).map(|(x, _)| x);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
+
+    /// Get the height.
     pub fn height(&self) -> usize {
         let blocks = self.shape.blocks(self.rot).map(|(_, y)| y);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
@@ -135,6 +150,7 @@ const SHAPES: [(&[[(usize, usize); 4]], &str); 7] = [
     ),
 ];
 
+/// The shape of a tetrimino.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Shape {
     O,
@@ -147,6 +163,7 @@ pub enum Shape {
 }
 
 impl Shape {
+    /// Returns the all items as an array.
     pub fn all_as_array() -> [Self; 7] {
         [
             Shape::O,
