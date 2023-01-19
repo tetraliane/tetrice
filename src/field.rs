@@ -1,5 +1,8 @@
 const HEIGHT_NEG: usize = 7;
 
+/// A game field.
+///
+/// This consists of the visible (y>0) and non-visible (y<0) areas.
 #[derive(Debug)]
 pub struct Field {
     state: Vec<Vec<&'static str>>,
@@ -14,18 +17,26 @@ impl Field {
         Self { state }
     }
 
+    /// Get the visible area as an 2D-Vec.
+    ///
+    /// The value at every position is one of the tetrimino colors if a block
+    /// exists, and an empty string otherwise.
     pub fn as_vec(&self) -> &[Vec<&str>] {
         &self.state[HEIGHT_NEG..]
     }
 
+    /// Get the width.
     pub fn width(&self) -> usize {
         self.state[0].len()
     }
 
+    /// Get the height of the visible area.
     pub fn height(&self) -> usize {
         self.state.len() - HEIGHT_NEG
     }
 
+    /// Get the color at the given position. If there are no blocks, returns an
+    /// empty string. If the position is out of this field, returns `None`.
     pub fn get_color(&self, (x, y): (isize, isize)) -> Option<&str> {
         if x < 0 || y < -(HEIGHT_NEG as isize) {
             None

@@ -1,3 +1,24 @@
+//! This crate provides core functions of Tetris.
+//!
+//! # How to use
+//!
+//! 1. Import `Game` and `Shape`.
+//! 2. Make a shape selector.
+//!    ```
+//!    fn selector() -> Shape {
+//!        // Return one of the shapes (probably you want to select randomly)
+//!    }
+//!    ```
+//! 3. Create a game.
+//!    ```
+//!    fn main() {
+//!        // Create a game which has a 10x20 field and provides 3 next tetriminos
+//!        let mut game = Game::new(10, 20, 3, selector);
+//!
+//!        // Now you can move, rotate, etc. using `game`!
+//!    }
+//!    ```
+
 mod field;
 mod checker;
 mod tetrimino;
@@ -12,6 +33,10 @@ pub use field::Field;
 pub use checker::Checker;
 pub use tetrimino::{Shape, Tetrimino};
 
+/// A game manager.
+///
+/// Move or rotate the tetrimino so that it is always inside the field and it
+/// doesn't overlap to other blocks. Also have "next tetrimino" and "hold" system.
 pub struct Game {
     field: Field,
     tetrimino: Tetrimino,
@@ -24,6 +49,9 @@ pub struct Game {
 }
 
 impl Game {
+    /// Create a new game.
+    ///
+    /// `selector` is a function called when creating a new tetrimino.
     pub fn new(
         width: usize,
         height: usize,
@@ -65,22 +93,54 @@ impl Game {
         }
     }
 
+    /// Get the field.
     pub fn field(&self) -> &Field {
         &self.field
     }
 
+    /// Get the current tetrimino.
     pub fn tetrimino(&self) -> &Tetrimino {
         &self.tetrimino
     }
 
+    /// Get the queue of next tetriminos.
     pub fn queue(&self) -> &VecDeque<Tetrimino> {
         &self.queue
     }
 
+    /// Get the held tetrimino. If no tetrimino is held, returns `None`.
     pub fn held(&self) -> Option<Tetrimino> {
         self.held.clone()
     }
 
+    /// Get the ghost, which shows a tetrimino after the current tetrimino is
+    /// hard-dropped.
+    ///
+    /// The ghost is located the deepest place the current tetrimino can reach
+    /// by moving left, right or down and rotating. For example, consider
+    /// the field like this (`x` is the blocks in the field and `o` is the
+    /// blocks of the tetrimino):
+    ///
+    /// ```txt
+    /// |    o   |
+    /// |   ooo  |
+    /// |        |
+    /// |   xxxxx|
+    /// |       x|
+    /// |       x|
+    /// ```
+    ///
+    /// Here the ghost is located like the following because the tetrimino can
+    /// reach there by going left, then down, and then right.
+    ///
+    /// ```txt
+    /// |        |
+    /// |        |
+    /// |        |
+    /// |   xxxxx|
+    /// |    o  x|
+    /// |   ooo x|
+    /// ```
     pub fn ghost(&self) -> Tetrimino {
         let bottom = self.tetrimino.bottom();
         let dist_down = self.field.height() as isize - bottom;
@@ -94,18 +154,30 @@ impl Game {
             .unwrap()
     }
 
+    /// Create a `Checker` from the field and the current tetrimino.
     pub fn check(&self) -> Checker {
         Checker(&self.field, &self.tetrimino)
     }
 
+    /// Returns true if this game has ended.
+    ///
+    /// The game ends when a tetrimino is saved completely in the non-visible
+    /// area. After the end, this game manager doesn't change the tetrimino
+    /// and the field anymore. If even one of the four blocks is saved in the
+    /// visible area, the game continues.
     pub fn is_end(&self) -> bool {
         return self.is_end;
     }
 
+    /// Get the number of lines removed in this game.
     pub fn removed_lines(&self) -> usize {
         self.removed_lines
     }
 
+    /// Move the current tetrimino to the left. However, when it touches the
+    /// left border or other blocks, or after the game has end, do nothing.
+    ///
+    /// Returns true when actually moved the tetrimino.
     pub fn move_left(&mut self) -> bool {
         if self.is_end {
             return false;
@@ -118,6 +190,8 @@ impl Game {
             false
         }
     }
+
+    /// Same as `move_left`, but move the tetrimino to the right.
     pub fn move_right(&mut self) -> bool {
         if self.is_end {
             return false;
@@ -130,6 +204,8 @@ impl Game {
             false
         }
     }
+
+    /// Same as `move_left`, but move down the tetrimino.
     pub fn soft_drop(&mut self) -> bool {
         if self.is_end {
             return false;
@@ -143,6 +219,11 @@ impl Game {
         }
     }
 
+    /// Rotate the tetrimino clockwise, and move it to where it doesn't
+    /// overlap. However do nothing when such a place doesn't exist nearby or
+    /// after the game has end.
+    ///
+    /// Returns true if actually rotated the tetrimino.
     pub fn rotate(&mut self) -> bool {
         if self.is_end {
             return false;
@@ -161,6 +242,7 @@ impl Game {
         }
     }
 
+    /// Drop the tetrimino to the position of the ghost. Doesn't work after end.
     pub fn hard_drop(&mut self) {
         if self.is_end {
             return;
@@ -174,6 +256,10 @@ impl Game {
         self.queue.pop_front().unwrap()
     }
 
+    /// Save the current tetrimino to the field and remove the filled lines.
+    /// Returns the number of removed lines.
+    ///
+    /// Doesn't work after end.
     pub fn save(&mut self) -> usize {
         if self.is_end {
             return 0;
@@ -194,6 +280,10 @@ impl Game {
         lines
     }
 
+    /// Hold the current tetrimino. Doesn't work just after another holding or
+    /// after the game has ended. Returns true when holding has been executed.
+    ///
+    /// Note: You can't hold tetriminos twice without saving.
     pub fn hold(&mut self) {
         if !self.can_hold || self.is_end {
             return;
