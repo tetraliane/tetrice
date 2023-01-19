@@ -180,7 +180,7 @@ impl Game {
         }
 
         for pos in self.tetrimino.blocks() {
-            self.field.set(&pos, self.tetrimino.color());
+            self.field.set(pos, self.tetrimino.color());
         }
         if self.tetrimino.bottom() < 0 {
             self.is_end = true;

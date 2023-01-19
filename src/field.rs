@@ -36,8 +36,8 @@ impl Field {
         }
     }
 
-    pub(crate) fn set(&mut self, (x, y): &(isize, isize), color: &'static str) {
-        let x = *x as usize;
+    pub(crate) fn set(&mut self, (x, y): (isize, isize), color: &'static str) {
+        let x = x as usize;
         let y = (y + HEIGHT_NEG as isize) as usize;
         self.state[y][x] = color;
     }
