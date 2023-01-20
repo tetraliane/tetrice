@@ -77,7 +77,10 @@ fn create_a_tetrimino() {
     let game = make_game();
     let tetrimino = game.tetrimino();
     // Locate the tetrimino at the center above the field
-    assert_eq!(game.tetrimino(), &Tetrimino::new(BlockKind::T).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::T).move_to((3, -2))
+    );
     assert_eq!(tetrimino.kind(), BlockKind::T);
 }
 
@@ -95,7 +98,10 @@ fn locate_the_tetrimino_higher_when_it_overlaps() {
     game.tetrimino = Tetrimino::new(BlockKind::T).move_to((3, 18));
 
     game.save();
-    assert_eq!(game.tetrimino(), &Tetrimino::new(BlockKind::L).move_to((3, -3)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -3))
+    );
 }
 
 #[test]
@@ -248,7 +254,10 @@ fn ghost_may_jump_over_blocks() {
 fn hard_drop_tetrimino() {
     let mut game = make_game();
     game.hard_drop();
-    assert_eq!(game.tetrimino(), &Tetrimino::new(BlockKind::T).move_to((3, 18)),)
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::T).move_to((3, 18)),
+    )
 }
 
 #[test]
@@ -287,7 +296,10 @@ fn save_tetrimino() {
         ]
     );
     // L-tetrimino is generated
-    assert_eq!(game.tetrimino(), &Tetrimino::new(BlockKind::L).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -2))
+    );
 }
 
 #[test]
@@ -376,7 +388,10 @@ fn hold_tetrimino() {
         game.held().unwrap(),
         Tetrimino::new(BlockKind::T).move_to((0, 0))
     );
-    assert_eq!(game.tetrimino(), &Tetrimino::new(BlockKind::L).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -2))
+    );
 }
 
 #[test]
@@ -399,7 +414,10 @@ fn do_not_hold_twice_without_saving() {
         game.held().unwrap(),
         Tetrimino::new(BlockKind::T).move_to((0, 0))
     );
-    assert_eq!(game.tetrimino(), &Tetrimino::new(BlockKind::L).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -2))
+    );
 }
 
 #[test]
@@ -413,7 +431,10 @@ fn can_hold_again_after_save() {
         game.held().unwrap(),
         Tetrimino::new(BlockKind::I).move_to((0, 0))
     );
-    assert_eq!(game.tetrimino(), &Tetrimino::new(BlockKind::T).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::T).move_to((3, -2))
+    );
 }
 
 #[test]
