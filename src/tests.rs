@@ -243,9 +243,31 @@ fn save_tetrimino() {
     assert_eq!(
         game.field().as_vec()[17..],
         [
-            [""; 10],
-            ["", "", "", "", "purple", "", "", "", "", ""],
-            ["", "", "", "purple", "purple", "purple", "", "", "", ""],
+            [Cell::Empty; 10],
+            [
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block("purple"),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty
+            ],
+            [
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block("purple"),
+                Cell::Block("purple"),
+                Cell::Block("purple"),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty
+            ],
         ]
     );
     // L-tetrimino is generated
@@ -269,7 +291,21 @@ fn remove_filled_lines_when_saving() {
     let result = game.save();
     assert_eq!(
         game.field().as_vec()[18..],
-        [[""; 10], ["", "", "", "", "purple", "", "", "", "", ""],]
+        [
+            [Cell::Empty; 10],
+            [
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block("purple"),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty
+            ],
+        ]
     );
     // return how many lines are removed
     assert_eq!(result, 1);
@@ -301,7 +337,7 @@ fn stop_updating_after_end() {
     game.hard_drop();
     assert_eq!(game.tetrimino(), &expected);
     game.save();
-    assert_eq!(game.field().as_vec(), vec![vec![""; 10]; 20]);
+    assert_eq!(game.field().as_vec(), vec![vec![Cell::Empty; 10]; 20]);
     game.hold();
     assert_eq!(game.tetrimino(), &expected);
     assert!(game.held().is_none());

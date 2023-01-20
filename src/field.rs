@@ -5,7 +5,7 @@ const HEIGHT_NEG: usize = 7;
 /// This consists of the visible (y>0) and non-visible (y<0) areas.
 #[derive(Debug)]
 pub struct Field {
-    state: Vec<Vec<&'static str>>,
+    state: Vec<Vec<Cell>>,
 }
 
 impl Field {
@@ -14,14 +14,26 @@ impl Field {
     }
 
     pub(crate) fn from_vec(state: Vec<Vec<&'static str>>) -> Self {
-        Self { state }
+        Self {
+            state: state
+                .iter()
+                .map(|row| {
+                    row.iter()
+                        .map(|cell| match *cell {
+                            "" => Cell::Empty,
+                            col => Cell::Block(col),
+                        })
+                        .collect()
+                })
+                .collect(),
+        }
     }
 
     /// Get the visible area as an 2D-Vec.
     ///
     /// The value at every position is one of the tetrimino colors if a block
     /// exists, and an empty string otherwise.
-    pub fn as_vec(&self) -> &[Vec<&str>] {
+    pub fn as_vec(&self) -> &[Vec<Cell>] {
         &self.state[HEIGHT_NEG..]
     }
 
@@ -44,11 +56,7 @@ impl Field {
         if (0..width).contains(&x) && (height_min..height_max).contains(&y) {
             let x = x as usize;
             let y = (y + HEIGHT_NEG as isize) as usize;
-            if self.state[y][x] == "" {
-                Cell::Empty
-            } else {
-                Cell::Block(self.state[y][x])
-            }
+            self.state[y][x]
         } else {
             Cell::Outside
         }
@@ -57,26 +65,26 @@ impl Field {
     pub(crate) fn set(&mut self, (x, y): (isize, isize), color: &'static str) {
         let x = x as usize;
         let y = (y + HEIGHT_NEG as isize) as usize;
-        self.state[y][x] = color;
+        self.state[y][x] = Cell::Block(color);
     }
 
     pub(crate) fn remove_filled_lines(&mut self) -> usize {
         let lines_not_filled: Vec<_> = self
             .state
             .iter()
-            .filter(|line| !line.iter().all(|cell| *cell != ""))
+            .filter(|line| !line.iter().all(|cell| *cell != Cell::Empty))
             .map(|line| line.clone())
             .collect();
         let count = self.state.len() - lines_not_filled.len();
 
-        self.state = [vec![vec![""; 10]; count], lines_not_filled].concat();
+        self.state = [vec![vec![Cell::Empty; 10]; count], lines_not_filled].concat();
 
         count
     }
 }
 
 /// A state of cells in the field.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Cell {
     /// Indicates there is a block in the cell. The color is included as the value.
     Block(&'static str),
