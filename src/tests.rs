@@ -55,7 +55,7 @@ fn return_color_for_saved_blocks() {
     let mut game = make_game();
     game.hard_drop();
     game.save();
-    assert_eq!(game.field().get_cell((4, 19)), Cell::Block("purple"))
+    assert_eq!(game.field().get_cell((4, 19)), Cell::Block(Shape::T))
 }
 
 #[test]
@@ -87,7 +87,7 @@ fn locate_the_tetrimino_higher_when_it_overlaps() {
     game.field = Field::from_vec(
         [
             vec![vec![Cell::Empty; 10]; 6],
-            vec![vec![Cell::Block("red"); 10]],
+            vec![vec![Cell::Block(Shape::O); 10]],
             vec![vec![Cell::Empty; 10]; 20],
         ]
         .concat(),
@@ -173,7 +173,7 @@ fn do_not_go_through_other_blocks() {
     // 7 is the height of the negative area
     let mut field = vec![vec![Cell::Empty; 4]; 7 + 1];
     field.push(vec![
-        Cell::Block("red"),
+        Cell::Block(Shape::O),
         Cell::Empty,
         Cell::Empty,
         Cell::Empty,
@@ -227,9 +227,9 @@ fn ghost_may_jump_over_blocks() {
             Cell::Empty,
             Cell::Empty,
             Cell::Empty,
-            Cell::Block("red"),
-            Cell::Block("red"),
-            Cell::Block("red"),
+            Cell::Block(Shape::O),
+            Cell::Block(Shape::O),
+            Cell::Block(Shape::O),
             Cell::Empty,
             Cell::Empty,
             Cell::Empty,
@@ -265,7 +265,7 @@ fn save_tetrimino() {
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
-                Cell::Block("purple"),
+                Cell::Block(Shape::T),
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
@@ -276,9 +276,9 @@ fn save_tetrimino() {
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
-                Cell::Block("purple"),
-                Cell::Block("purple"),
-                Cell::Block("purple"),
+                Cell::Block(Shape::T),
+                Cell::Block(Shape::T),
+                Cell::Block(Shape::T),
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
@@ -297,16 +297,16 @@ fn remove_filled_lines_when_saving() {
         [
             vec![vec![Cell::Empty; 10]; 26],
             vec![vec![
-                Cell::Block("red"),
-                Cell::Block("red"),
-                Cell::Block("red"),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
-                Cell::Block("red"),
-                Cell::Block("red"),
-                Cell::Block("red"),
-                Cell::Block("red"),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
             ]],
         ]
         .concat(),
@@ -323,7 +323,7 @@ fn remove_filled_lines_when_saving() {
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
-                Cell::Block("purple"),
+                Cell::Block(Shape::T),
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
@@ -423,16 +423,16 @@ fn have_sum_of_removed_lines() {
         [
             vec![vec![Cell::Empty; 10]; 26],
             vec![vec![
-                Cell::Block("red"),
-                Cell::Block("red"),
-                Cell::Block("red"),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
                 Cell::Empty,
                 Cell::Empty,
                 Cell::Empty,
-                Cell::Block("red"),
-                Cell::Block("red"),
-                Cell::Block("red"),
-                Cell::Block("red"),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
+                Cell::Block(Shape::O),
             ]],
         ]
         .concat(),

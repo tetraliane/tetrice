@@ -55,7 +55,7 @@ impl Field {
     pub(crate) fn set(&mut self, (x, y): (isize, isize), shape: Shape) {
         let x = x as usize;
         let y = (y + HEIGHT_NEG as isize) as usize;
-        self.state[y][x] = Cell::Block(shape.color());
+        self.state[y][x] = Cell::Block(shape);
     }
 
     pub(crate) fn remove_filled_lines(&mut self) -> usize {
@@ -76,8 +76,8 @@ impl Field {
 /// A state of cells in the field.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Cell {
-    /// Indicates there is a block in the cell. The color is included as the value.
-    Block(&'static str),
+    /// Indicates there is a block in the cell. The shape is included as the value.
+    Block(Shape),
     /// Indicates there is no block in the cell.
     Empty,
     /// Indicates the specified cell is out of the field.
