@@ -76,7 +76,7 @@ impl Field {
 /// A state of cells in the field.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Cell {
-    /// Indicates there is a block in the cell. The shape is included as the value.
+    /// Indicates there is a block in the cell. The kind is included as the value.
     Block(BlockKind),
     /// Indicates there is no block in the cell.
     Empty,

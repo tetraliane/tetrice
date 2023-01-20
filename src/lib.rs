@@ -2,11 +2,11 @@
 //!
 //! # How to use
 //!
-//! 1. Import `Game` and `Shape`.
-//! 2. Make a shape selector.
+//! 1. Import `Game` and `BlockKind`.
+//! 2. Make a block kind selector.
 //!    ```ignore
-//!    fn selector() -> Shape {
-//!        // Return one of the shapes (probably you want to select randomly)
+//!    fn selector() -> BlockKind {
+//!        // Return one of the kinds (probably you want to select randomly)
 //!    }
 //!    ```
 //! 3. Create a game.

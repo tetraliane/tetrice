@@ -445,7 +445,7 @@ fn have_sum_of_removed_lines() {
 }
 
 #[test]
-fn make_list_of_all_shapes() {
+fn make_list_of_all_kinds() {
     let result = BlockKind::all_as_array();
     assert_eq!(
         HashSet::from(result),

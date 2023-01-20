@@ -15,7 +15,7 @@ impl Tetrimino {
         }
     }
 
-    /// Get the shape.
+    /// Get the block kind.
     pub fn kind(&self) -> BlockKind {
         self.kind
     }
@@ -119,7 +119,7 @@ const SHAPES: [&[[(usize, usize); 4]]; 7] = [
     ],
 ];
 
-/// The shape of a tetrimino.
+/// The block kind of a tetrimino.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BlockKind {
     O,
