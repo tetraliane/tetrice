@@ -86,9 +86,9 @@ fn locate_the_tetrimino_higher_when_it_overlaps() {
     let mut game = make_game();
     game.field = Field::from_vec(
         [
-            vec![vec![""; 10]; 6],
-            vec![vec!["red"; 10]],
-            vec![vec![""; 10]; 20],
+            vec![vec![Cell::Empty; 10]; 6],
+            vec![vec![Cell::Block("red"); 10]],
+            vec![vec![Cell::Empty; 10]; 20],
         ]
         .concat(),
     );
@@ -171,8 +171,13 @@ fn do_not_go_through_other_blocks() {
     let original = Tetrimino::new(Shape::T).move_to((1, 0));
 
     // 7 is the height of the negative area
-    let mut field = vec![vec![""; 4]; 7 + 1];
-    field.push(vec!["red", "", "", ""]);
+    let mut field = vec![vec![Cell::Empty; 4]; 7 + 1];
+    field.push(vec![
+        Cell::Block("red"),
+        Cell::Empty,
+        Cell::Empty,
+        Cell::Empty,
+    ]);
     let mut game = make_game();
     game.field = Field::from_vec(field);
     game.tetrimino = original.clone();
@@ -197,7 +202,7 @@ fn rotate_tetrimino() {
 fn move_tetrimino_not_to_overlap_after_rotation() {
     // 7 is the height of the negative area
     let mut game = make_game();
-    game.field = Field::from_vec(vec![vec![""; 3]; 7 + 2]);
+    game.field = Field::from_vec(vec![vec![Cell::Empty; 3]; 7 + 2]);
     game.tetrimino = Tetrimino::new(Shape::T);
 
     game.rotate();
@@ -217,9 +222,20 @@ fn create_ghost() {
 fn ghost_may_jump_over_blocks() {
     // 7 is the height of the negative area
     let field_state = [
-        vec![vec![""; 10]; 7],
-        vec![vec!["", "", "", "red", "red", "red", "", "", "", ""]],
-        vec![vec![""; 10]; 3],
+        vec![vec![Cell::Empty; 10]; 7],
+        vec![vec![
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Block("red"),
+            Cell::Block("red"),
+            Cell::Block("red"),
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Empty,
+        ]],
+        vec![vec![Cell::Empty; 10]; 3],
     ]
     .concat();
     let mut game = make_game();
@@ -279,9 +295,18 @@ fn remove_filled_lines_when_saving() {
     let mut game = make_game();
     game.field = Field::from_vec(
         [
-            vec![vec![""; 10]; 26],
+            vec![vec![Cell::Empty; 10]; 26],
             vec![vec![
-                "red", "red", "red", "", "", "", "red", "red", "red", "red",
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Block("red"),
             ]],
         ]
         .concat(),
@@ -314,7 +339,7 @@ fn remove_filled_lines_when_saving() {
 #[test]
 fn end_when_saved_tetrimino_is_out_of_visible_area() {
     let mut game = make_game();
-    game.field = Field::from_vec(vec![vec![""; 10]; 7]);
+    game.field = Field::from_vec(vec![vec![Cell::Empty; 10]; 7]);
 
     game.save();
     assert!(game.is_end());
@@ -396,9 +421,18 @@ fn have_sum_of_removed_lines() {
     let mut game = make_game();
     game.field = Field::from_vec(
         [
-            vec![vec![""; 10]; 26],
+            vec![vec![Cell::Empty; 10]; 26],
             vec![vec![
-                "red", "red", "red", "", "", "", "red", "red", "red", "red",
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Block("red"),
+                Cell::Block("red"),
             ]],
         ]
         .concat(),

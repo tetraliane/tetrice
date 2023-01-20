@@ -12,23 +12,11 @@ pub struct Field {
 
 impl Field {
     pub(crate) fn new(width: usize, height: usize) -> Self {
-        Self::from_vec(vec![vec![""; width]; height + HEIGHT_NEG])
+        Self::from_vec(vec![vec![Cell::Empty; width]; height + HEIGHT_NEG])
     }
 
-    pub(crate) fn from_vec(state: Vec<Vec<&'static str>>) -> Self {
-        Self {
-            state: state
-                .iter()
-                .map(|row| {
-                    row.iter()
-                        .map(|cell| match *cell {
-                            "" => Cell::Empty,
-                            col => Cell::Block(col),
-                        })
-                        .collect()
-                })
-                .collect(),
-        }
+    pub(crate) fn from_vec(state: Vec<Vec<Cell>>) -> Self {
+        Self { state }
     }
 
     /// Get the visible area as an 2D-Vec.
