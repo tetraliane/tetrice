@@ -1,54 +1,41 @@
 /// A tetrimino consisting of four dropping blocks.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Tetrimino {
-    shape: Shape,
+    kind: BlockKind,
     rot: usize,
     pos: (isize, isize),
 }
 
 impl Tetrimino {
-    pub(crate) fn new(shape: Shape) -> Self {
+    pub(crate) fn new(kind: BlockKind) -> Self {
         Self {
-            shape,
+            kind,
             rot: 0,
             pos: (0, 0),
         }
     }
 
-    pub(crate) fn shape(&self) -> Shape {
-        self.shape
+    /// Get the block kind.
+    pub fn kind(&self) -> BlockKind {
+        self.kind
     }
 
     /// Get a list of positions of the all blocks consisting this tetrimino.
     pub fn blocks(&self) -> [(isize, isize); 4] {
-        self.shape
+        self.kind
             .blocks(self.rot)
             .map(|(x, y)| (x as isize + self.pos.0, y as isize + self.pos.1))
     }
 
-    /// Get the color.
-    ///
-    /// The color is determined by the shape:
-    /// - O-tetrimino → yellow
-    /// - I-tetrimino → lightblue
-    /// - Z-tetrimino → red,
-    /// - S-tetrimino → green,
-    /// - L-tetrimino → blue,
-    /// - T-tetrimino → purple,
-    /// - J-tetrimino → orange,
-    pub fn color(&self) -> &'static str {
-        self.shape.color()
-    }
-
     /// Get the width.
     pub fn width(&self) -> usize {
-        let blocks = self.shape.blocks(self.rot).map(|(x, _)| x);
+        let blocks = self.kind.blocks(self.rot).map(|(x, _)| x);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
 
     /// Get the height.
     pub fn height(&self) -> usize {
-        let blocks = self.shape.blocks(self.rot).map(|(_, y)| y);
+        let blocks = self.kind.blocks(self.rot).map(|(_, y)| y);
         (blocks.iter().max().unwrap() - blocks.iter().min().unwrap() + 1) as usize
     }
 
@@ -58,7 +45,7 @@ impl Tetrimino {
 
     fn _move(&self, pos: (isize, isize)) -> Self {
         Self {
-            shape: self.shape,
+            kind: self.kind,
             rot: self.rot,
             pos,
         }
@@ -87,72 +74,54 @@ impl Tetrimino {
 
     pub(crate) fn rotate(&self, times: usize) -> Self {
         Self {
-            shape: self.shape,
-            rot: (self.rot + times) % self.shape.num_rot(),
+            kind: self.kind,
+            rot: (self.rot + times) % self.kind.num_rot(),
             pos: self.pos,
         }
     }
 }
 
-const SHAPES: [(&[[(usize, usize); 4]], &str); 7] = [
-    (&[[(0, 0), (1, 0), (0, 1), (1, 1)]], "yellow"),
-    (
-        &[
-            [(0, 1), (1, 1), (2, 1), (3, 1)],
-            [(1, 0), (1, 1), (1, 2), (1, 3)],
-        ],
-        "lightblue",
-    ),
-    (
-        &[
-            [(0, 0), (1, 0), (1, 1), (2, 1)],
-            [(2, 0), (2, 1), (1, 1), (1, 2)],
-            [(2, 2), (1, 2), (1, 1), (0, 1)],
-            [(0, 2), (0, 1), (1, 1), (1, 0)],
-        ],
-        "red",
-    ),
-    (
-        &[
-            [(1, 0), (2, 0), (0, 1), (1, 1)],
-            [(2, 1), (2, 2), (1, 0), (1, 1)],
-            [(1, 2), (0, 2), (2, 1), (1, 1)],
-            [(0, 1), (0, 0), (1, 2), (1, 1)],
-        ],
-        "green",
-    ),
-    (
-        &[
-            [(0, 0), (0, 1), (1, 1), (2, 1)],
-            [(2, 0), (1, 0), (1, 1), (1, 2)],
-            [(2, 2), (2, 1), (1, 1), (0, 1)],
-            [(0, 2), (1, 2), (1, 1), (1, 0)],
-        ],
-        "blue",
-    ),
-    (
-        &[
-            [(1, 0), (0, 1), (1, 1), (2, 1)],
-            [(2, 1), (1, 0), (1, 1), (1, 2)],
-            [(1, 2), (2, 1), (1, 1), (0, 1)],
-            [(0, 1), (1, 2), (1, 1), (1, 0)],
-        ],
-        "purple",
-    ),
-    (
-        &[
-            [(2, 0), (0, 1), (1, 1), (2, 1)],
-            [(2, 2), (1, 0), (1, 1), (1, 2)],
-            [(0, 2), (2, 1), (1, 1), (0, 1)],
-            [(0, 0), (1, 2), (1, 1), (1, 0)],
-        ],
-        "orange",
-    ),
+const SHAPES: [&[[(usize, usize); 4]]; 7] = [
+    &[[(0, 0), (1, 0), (0, 1), (1, 1)]],
+    &[
+        [(0, 1), (1, 1), (2, 1), (3, 1)],
+        [(1, 0), (1, 1), (1, 2), (1, 3)],
+    ],
+    &[
+        [(0, 0), (1, 0), (1, 1), (2, 1)],
+        [(2, 0), (2, 1), (1, 1), (1, 2)],
+        [(2, 2), (1, 2), (1, 1), (0, 1)],
+        [(0, 2), (0, 1), (1, 1), (1, 0)],
+    ],
+    &[
+        [(1, 0), (2, 0), (0, 1), (1, 1)],
+        [(2, 1), (2, 2), (1, 0), (1, 1)],
+        [(1, 2), (0, 2), (2, 1), (1, 1)],
+        [(0, 1), (0, 0), (1, 2), (1, 1)],
+    ],
+    &[
+        [(0, 0), (0, 1), (1, 1), (2, 1)],
+        [(2, 0), (1, 0), (1, 1), (1, 2)],
+        [(2, 2), (2, 1), (1, 1), (0, 1)],
+        [(0, 2), (1, 2), (1, 1), (1, 0)],
+    ],
+    &[
+        [(1, 0), (0, 1), (1, 1), (2, 1)],
+        [(2, 1), (1, 0), (1, 1), (1, 2)],
+        [(1, 2), (2, 1), (1, 1), (0, 1)],
+        [(0, 1), (1, 2), (1, 1), (1, 0)],
+    ],
+    &[
+        [(2, 0), (0, 1), (1, 1), (2, 1)],
+        [(2, 2), (1, 0), (1, 1), (1, 2)],
+        [(0, 2), (2, 1), (1, 1), (0, 1)],
+        [(0, 0), (1, 2), (1, 1), (1, 0)],
+    ],
 ];
 
-/// The shape of a tetrimino.
+/// The block kind of a tetrimino.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Shape {
+pub enum BlockKind {
     O,
     I,
     Z,
@@ -162,21 +131,21 @@ pub enum Shape {
     J,
 }
 
-impl Shape {
+impl BlockKind {
     /// Returns the all items as an array.
     pub fn all_as_array() -> [Self; 7] {
         [
-            Shape::O,
-            Shape::I,
-            Shape::Z,
-            Shape::S,
-            Shape::L,
-            Shape::T,
-            Shape::J,
+            BlockKind::O,
+            BlockKind::I,
+            BlockKind::Z,
+            BlockKind::S,
+            BlockKind::L,
+            BlockKind::T,
+            BlockKind::J,
         ]
     }
 
-    fn data(&self) -> (&[[(usize, usize); 4]], &'static str) {
+    fn data(&self) -> &[[(usize, usize); 4]] {
         match &self {
             Self::O => SHAPES[0],
             Self::I => SHAPES[1],
@@ -189,14 +158,10 @@ impl Shape {
     }
 
     fn num_rot(&self) -> usize {
-        self.data().0.len()
+        self.data().len()
     }
 
     fn blocks(&self, rot: usize) -> [(usize, usize); 4] {
-        self.data().0[rot]
-    }
-
-    fn color(&self) -> &'static str {
-        self.data().1
+        self.data()[rot]
     }
 }

@@ -1,3 +1,5 @@
+use crate::BlockKind;
+
 const HEIGHT_NEG: usize = 7;
 
 /// A game field.
@@ -5,15 +7,15 @@ const HEIGHT_NEG: usize = 7;
 /// This consists of the visible (y>0) and non-visible (y<0) areas.
 #[derive(Debug)]
 pub struct Field {
-    state: Vec<Vec<&'static str>>,
+    state: Vec<Vec<Cell>>,
 }
 
 impl Field {
     pub(crate) fn new(width: usize, height: usize) -> Self {
-        Self::from_vec(vec![vec![""; width]; height + HEIGHT_NEG])
+        Self::from_vec(vec![vec![Cell::Empty; width]; height + HEIGHT_NEG])
     }
 
-    pub(crate) fn from_vec(state: Vec<Vec<&'static str>>) -> Self {
+    pub(crate) fn from_vec(state: Vec<Vec<Cell>>) -> Self {
         Self { state }
     }
 
@@ -21,7 +23,7 @@ impl Field {
     ///
     /// The value at every position is one of the tetrimino colors if a block
     /// exists, and an empty string otherwise.
-    pub fn as_vec(&self) -> &[Vec<&str>] {
+    pub fn as_vec(&self) -> &[Vec<Cell>] {
         &self.state[HEIGHT_NEG..]
     }
 
@@ -35,35 +37,49 @@ impl Field {
         self.state.len() - HEIGHT_NEG
     }
 
-    /// Get the color at the given position. If there are no blocks, returns an
-    /// empty string. If the position is out of this field, returns `None`.
-    pub fn get_color(&self, (x, y): (isize, isize)) -> Option<&str> {
-        if x < 0 || y < -(HEIGHT_NEG as isize) {
-            None
-        } else {
+    /// Get the color at the given position. If there are no blocks, returns
+    /// `Cell::None`. If the position is out of this field, returns `Cell::Outside`.
+    pub fn get_cell(&self, (x, y): (isize, isize)) -> Cell {
+        let width = self.width() as isize;
+        let height_min = -(HEIGHT_NEG as isize);
+        let height_max = self.height() as isize;
+        if (0..width).contains(&x) && (height_min..height_max).contains(&y) {
             let x = x as usize;
             let y = (y + HEIGHT_NEG as isize) as usize;
-            self.state.get(y).and_then(|row| row.get(x).map(|c| *c))
+            self.state[y][x]
+        } else {
+            Cell::Outside
         }
     }
 
-    pub(crate) fn set(&mut self, (x, y): (isize, isize), color: &'static str) {
+    pub(crate) fn set(&mut self, (x, y): (isize, isize), kind: BlockKind) {
         let x = x as usize;
         let y = (y + HEIGHT_NEG as isize) as usize;
-        self.state[y][x] = color;
+        self.state[y][x] = Cell::Block(kind);
     }
 
     pub(crate) fn remove_filled_lines(&mut self) -> usize {
         let lines_not_filled: Vec<_> = self
             .state
             .iter()
-            .filter(|line| !line.iter().all(|cell| *cell != ""))
+            .filter(|line| !line.iter().all(|cell| *cell != Cell::Empty))
             .map(|line| line.clone())
             .collect();
         let count = self.state.len() - lines_not_filled.len();
 
-        self.state = [vec![vec![""; 10]; count], lines_not_filled].concat();
+        self.state = [vec![vec![Cell::Empty; 10]; count], lines_not_filled].concat();
 
         count
     }
+}
+
+/// A state of cells in the field.
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum Cell {
+    /// Indicates there is a block in the cell. The kind is included as the value.
+    Block(BlockKind),
+    /// Indicates there is no block in the cell.
+    Empty,
+    /// Indicates the specified cell is out of the field.
+    Outside,
 }

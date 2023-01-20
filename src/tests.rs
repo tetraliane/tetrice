@@ -1,20 +1,20 @@
 use std::collections::HashSet;
 
 use crate::{
-    field::Field,
-    tetrimino::{Shape, Tetrimino},
+    field::{Cell, Field},
+    tetrimino::{BlockKind, Tetrimino},
     Game,
 };
 
-fn make_selector() -> Box<dyn FnMut() -> Shape> {
+fn make_selector() -> Box<dyn FnMut() -> BlockKind> {
     let mut count = 0;
     Box::new(move || {
         count += 1;
         match count {
-            1 => Shape::T,
-            2 => Shape::L,
-            3 => Shape::I,
-            _ => Shape::J,
+            1 => BlockKind::T,
+            2 => BlockKind::L,
+            3 => BlockKind::I,
+            _ => BlockKind::J,
         }
     })
 }
@@ -47,21 +47,29 @@ fn height_must_be_1_or_more() {
 fn set_empty_string_to_every_cells() {
     let game = make_game();
     let field = game.field();
-    assert_eq!(field.get_color((1, 2)), Some(""));
+    assert_eq!(field.get_cell((1, 2)), Cell::Empty);
 }
 
 #[test]
-fn return_none_for_outside_points() {
-    let game = make_game();
-    let field = game.field();
-    assert_eq!(field.get_color((-1, 2)), None);
+fn return_color_for_saved_blocks() {
+    let mut game = make_game();
+    game.hard_drop();
+    game.save();
+    assert_eq!(game.field().get_cell((4, 19)), Cell::Block(BlockKind::T))
 }
 
 #[test]
-fn return_some_for_points_above_the_field() {
+fn do_not_panic_for_outside_points() {
     let game = make_game();
     let field = game.field();
-    assert_eq!(field.get_color((1, -2)), Some(""));
+    assert_eq!(field.get_cell((-1, 2)), Cell::Outside);
+}
+
+#[test]
+fn field_includes_points_above_the_visible_area() {
+    let game = make_game();
+    let field = game.field();
+    assert_eq!(field.get_cell((1, -2)), Cell::Empty);
 }
 
 #[test]
@@ -69,8 +77,11 @@ fn create_a_tetrimino() {
     let game = make_game();
     let tetrimino = game.tetrimino();
     // Locate the tetrimino at the center above the field
-    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::T).move_to((3, -2)));
-    assert_eq!(tetrimino.color(), "purple");
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::T).move_to((3, -2))
+    );
+    assert_eq!(tetrimino.kind(), BlockKind::T);
 }
 
 #[test]
@@ -78,16 +89,19 @@ fn locate_the_tetrimino_higher_when_it_overlaps() {
     let mut game = make_game();
     game.field = Field::from_vec(
         [
-            vec![vec![""; 10]; 6],
-            vec![vec!["red"; 10]],
-            vec![vec![""; 10]; 20],
+            vec![vec![Cell::Empty; 10]; 6],
+            vec![vec![Cell::Block(BlockKind::O); 10]],
+            vec![vec![Cell::Empty; 10]; 20],
         ]
         .concat(),
     );
-    game.tetrimino = Tetrimino::new(Shape::T).move_to((3, 18));
+    game.tetrimino = Tetrimino::new(BlockKind::T).move_to((3, 18));
 
     game.save();
-    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -3)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -3))
+    );
 }
 
 #[test]
@@ -96,9 +110,9 @@ fn create_queue_of_three_tetriminos() {
     assert_eq!(
         game.queue(),
         &[
-            Tetrimino::new(Shape::L),
-            Tetrimino::new(Shape::I),
-            Tetrimino::new(Shape::J),
+            Tetrimino::new(BlockKind::L),
+            Tetrimino::new(BlockKind::I),
+            Tetrimino::new(BlockKind::J),
         ]
     )
 }
@@ -117,7 +131,7 @@ fn move_tetrimino_to_left() {
     // The tetrimino moves to left by one step from (3, -2)
     assert_eq!(
         game.tetrimino(),
-        &Tetrimino::new(Shape::T).move_to((3 - 1, -2)),
+        &Tetrimino::new(BlockKind::T).move_to((3 - 1, -2)),
     );
     assert_eq!(result, true);
 }
@@ -129,7 +143,7 @@ fn move_tetrimino_to_right() {
     // The tetrimino moves to right by one step from (3, -2)
     assert_eq!(
         game.tetrimino(),
-        &Tetrimino::new(Shape::T).move_to((3 + 1, -2))
+        &Tetrimino::new(BlockKind::T).move_to((3 + 1, -2))
     );
     assert_eq!(result, true);
 }
@@ -141,14 +155,14 @@ fn soft_drop() {
     // The tetrimino moves down by one step from (3, -2)
     assert_eq!(
         game.tetrimino(),
-        &Tetrimino::new(Shape::T).move_to((3, -2 + 1))
+        &Tetrimino::new(BlockKind::T).move_to((3, -2 + 1))
     );
     assert_eq!(result, true);
 }
 
 #[test]
 fn do_not_go_through_border() {
-    let original = Tetrimino::new(Shape::T).move_to((0, 0));
+    let original = Tetrimino::new(BlockKind::T).move_to((0, 0));
 
     let mut game = make_game();
     game.tetrimino = original.clone();
@@ -160,11 +174,16 @@ fn do_not_go_through_border() {
 
 #[test]
 fn do_not_go_through_other_blocks() {
-    let original = Tetrimino::new(Shape::T).move_to((1, 0));
+    let original = Tetrimino::new(BlockKind::T).move_to((1, 0));
 
     // 7 is the height of the negative area
-    let mut field = vec![vec![""; 4]; 7 + 1];
-    field.push(vec!["red", "", "", ""]);
+    let mut field = vec![vec![Cell::Empty; 4]; 7 + 1];
+    field.push(vec![
+        Cell::Block(BlockKind::O),
+        Cell::Empty,
+        Cell::Empty,
+        Cell::Empty,
+    ]);
     let mut game = make_game();
     game.field = Field::from_vec(field);
     game.tetrimino = original.clone();
@@ -180,7 +199,7 @@ fn rotate_tetrimino() {
     let result = game.rotate();
     assert_eq!(
         game.tetrimino(),
-        &Tetrimino::new(Shape::T).move_to((3, -2)).rotate(1)
+        &Tetrimino::new(BlockKind::T).move_to((3, -2)).rotate(1)
     );
     assert_eq!(result, true);
 }
@@ -189,42 +208,56 @@ fn rotate_tetrimino() {
 fn move_tetrimino_not_to_overlap_after_rotation() {
     // 7 is the height of the negative area
     let mut game = make_game();
-    game.field = Field::from_vec(vec![vec![""; 3]; 7 + 2]);
-    game.tetrimino = Tetrimino::new(Shape::T);
+    game.field = Field::from_vec(vec![vec![Cell::Empty; 3]; 7 + 2]);
+    game.tetrimino = Tetrimino::new(BlockKind::T);
 
     game.rotate();
     assert_eq!(
         game.tetrimino(),
-        &Tetrimino::new(Shape::T).rotate(1).move_up(1)
+        &Tetrimino::new(BlockKind::T).rotate(1).move_up(1)
     );
 }
 
 #[test]
 fn create_ghost() {
     let game = make_game();
-    assert_eq!(game.ghost(), Tetrimino::new(Shape::T).move_to((3, 18)));
+    assert_eq!(game.ghost(), Tetrimino::new(BlockKind::T).move_to((3, 18)));
 }
 
 #[test]
 fn ghost_may_jump_over_blocks() {
     // 7 is the height of the negative area
     let field_state = [
-        vec![vec![""; 10]; 7],
-        vec![vec!["", "", "", "red", "red", "red", "", "", "", ""]],
-        vec![vec![""; 10]; 3],
+        vec![vec![Cell::Empty; 10]; 7],
+        vec![vec![
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Block(BlockKind::O),
+            Cell::Block(BlockKind::O),
+            Cell::Block(BlockKind::O),
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Empty,
+            Cell::Empty,
+        ]],
+        vec![vec![Cell::Empty; 10]; 3],
     ]
     .concat();
     let mut game = make_game();
     game.field = Field::from_vec(field_state);
 
-    assert_eq!(game.ghost(), Tetrimino::new(Shape::T).move_to((3, 2)));
+    assert_eq!(game.ghost(), Tetrimino::new(BlockKind::T).move_to((3, 2)));
 }
 
 #[test]
 fn hard_drop_tetrimino() {
     let mut game = make_game();
     game.hard_drop();
-    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::T).move_to((3, 18)),)
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::T).move_to((3, 18)),
+    )
 }
 
 #[test]
@@ -235,13 +268,38 @@ fn save_tetrimino() {
     assert_eq!(
         game.field().as_vec()[17..],
         [
-            [""; 10],
-            ["", "", "", "", "purple", "", "", "", "", ""],
-            ["", "", "", "purple", "purple", "purple", "", "", "", ""],
+            [Cell::Empty; 10],
+            [
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block(BlockKind::T),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty
+            ],
+            [
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block(BlockKind::T),
+                Cell::Block(BlockKind::T),
+                Cell::Block(BlockKind::T),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty
+            ],
         ]
     );
     // L-tetrimino is generated
-    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -2))
+    );
 }
 
 #[test]
@@ -249,9 +307,18 @@ fn remove_filled_lines_when_saving() {
     let mut game = make_game();
     game.field = Field::from_vec(
         [
-            vec![vec![""; 10]; 26],
+            vec![vec![Cell::Empty; 10]; 26],
             vec![vec![
-                "red", "red", "red", "", "", "", "red", "red", "red", "red",
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
             ]],
         ]
         .concat(),
@@ -261,7 +328,21 @@ fn remove_filled_lines_when_saving() {
     let result = game.save();
     assert_eq!(
         game.field().as_vec()[18..],
-        [[""; 10], ["", "", "", "", "purple", "", "", "", "", ""],]
+        [
+            [Cell::Empty; 10],
+            [
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block(BlockKind::T),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty
+            ],
+        ]
     );
     // return how many lines are removed
     assert_eq!(result, 1);
@@ -270,7 +351,7 @@ fn remove_filled_lines_when_saving() {
 #[test]
 fn end_when_saved_tetrimino_is_out_of_visible_area() {
     let mut game = make_game();
-    game.field = Field::from_vec(vec![vec![""; 10]; 7]);
+    game.field = Field::from_vec(vec![vec![Cell::Empty; 10]; 7]);
 
     game.save();
     assert!(game.is_end());
@@ -281,7 +362,7 @@ fn stop_updating_after_end() {
     let mut game = make_game();
     game.is_end = true;
 
-    let expected = Tetrimino::new(Shape::T).move_to((3, -2));
+    let expected = Tetrimino::new(BlockKind::T).move_to((3, -2));
     game.move_left();
     assert_eq!(game.tetrimino(), &expected);
     game.move_right();
@@ -293,7 +374,7 @@ fn stop_updating_after_end() {
     game.hard_drop();
     assert_eq!(game.tetrimino(), &expected);
     game.save();
-    assert_eq!(game.field().as_vec(), vec![vec![""; 10]; 20]);
+    assert_eq!(game.field().as_vec(), vec![vec![Cell::Empty; 10]; 20]);
     game.hold();
     assert_eq!(game.tetrimino(), &expected);
     assert!(game.held().is_none());
@@ -305,9 +386,12 @@ fn hold_tetrimino() {
     game.hold();
     assert_eq!(
         game.held().unwrap(),
-        Tetrimino::new(Shape::T).move_to((0, 0))
+        Tetrimino::new(BlockKind::T).move_to((0, 0))
     );
-    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -2))
+    );
 }
 
 #[test]
@@ -317,7 +401,7 @@ fn reset_rotation_when_holding() {
     game.hold();
     assert_eq!(
         game.held().unwrap(),
-        Tetrimino::new(Shape::T).move_to((0, 0))
+        Tetrimino::new(BlockKind::T).move_to((0, 0))
     );
 }
 
@@ -328,9 +412,12 @@ fn do_not_hold_twice_without_saving() {
     game.hold(); // actually doesn't hold
     assert_eq!(
         game.held().unwrap(),
-        Tetrimino::new(Shape::T).move_to((0, 0))
+        Tetrimino::new(BlockKind::T).move_to((0, 0))
     );
-    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::L).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::L).move_to((3, -2))
+    );
 }
 
 #[test]
@@ -342,9 +429,12 @@ fn can_hold_again_after_save() {
     game.hold(); // held: I, current: T
     assert_eq!(
         game.held().unwrap(),
-        Tetrimino::new(Shape::I).move_to((0, 0))
+        Tetrimino::new(BlockKind::I).move_to((0, 0))
     );
-    assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::T).move_to((3, -2)));
+    assert_eq!(
+        game.tetrimino(),
+        &Tetrimino::new(BlockKind::T).move_to((3, -2))
+    );
 }
 
 #[test]
@@ -352,9 +442,18 @@ fn have_sum_of_removed_lines() {
     let mut game = make_game();
     game.field = Field::from_vec(
         [
-            vec![vec![""; 10]; 26],
+            vec![vec![Cell::Empty; 10]; 26],
             vec![vec![
-                "red", "red", "red", "", "", "", "red", "red", "red", "red",
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Empty,
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
+                Cell::Block(BlockKind::O),
             ]],
         ]
         .concat(),
@@ -367,25 +466,25 @@ fn have_sum_of_removed_lines() {
 }
 
 #[test]
-fn make_list_of_all_shapes() {
-    let result = Shape::all_as_array();
+fn make_list_of_all_kinds() {
+    let result = BlockKind::all_as_array();
     assert_eq!(
         HashSet::from(result),
         HashSet::from([
-            Shape::I,
-            Shape::J,
-            Shape::L,
-            Shape::O,
-            Shape::S,
-            Shape::T,
-            Shape::Z,
+            BlockKind::I,
+            BlockKind::J,
+            BlockKind::L,
+            BlockKind::O,
+            BlockKind::S,
+            BlockKind::T,
+            BlockKind::Z,
         ])
     )
 }
 
 #[test]
 fn implement_debug() {
-    format!("{:?}", Shape::T);
-    format!("{:?}", Tetrimino::new(Shape::T));
+    format!("{:?}", BlockKind::T);
+    format!("{:?}", Tetrimino::new(BlockKind::T));
     format!("{:?}", Field::new(10, 20));
 }

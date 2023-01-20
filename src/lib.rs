@@ -2,11 +2,11 @@
 //!
 //! # How to use
 //!
-//! 1. Import `Game` and `Shape`.
-//! 2. Make a shape selector.
+//! 1. Import `Game` and `BlockKind`.
+//! 2. Make a block kind selector.
 //!    ```ignore
-//!    fn selector() -> Shape {
-//!        // Return one of the shapes (probably you want to select randomly)
+//!    fn selector() -> BlockKind {
+//!        // Return one of the kinds (probably you want to select randomly)
 //!    }
 //!    ```
 //! 3. Create a game.
@@ -19,8 +19,8 @@
 //!    }
 //!    ```
 
-mod field;
 mod checker;
+mod field;
 mod tetrimino;
 
 #[cfg(test)]
@@ -29,9 +29,9 @@ mod tests;
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 
-pub use field::Field;
 pub use checker::Checker;
-pub use tetrimino::{Shape, Tetrimino};
+pub use field::{Cell, Field};
+pub use tetrimino::{BlockKind, Tetrimino};
 
 /// A game manager.
 ///
@@ -42,7 +42,7 @@ pub struct Game {
     tetrimino: Tetrimino,
     queue: VecDeque<Tetrimino>,
     held: Option<Tetrimino>,
-    selector: Box<dyn FnMut() -> Shape>,
+    selector: Box<dyn FnMut() -> BlockKind>,
     can_hold: bool,
     is_end: bool,
     removed_lines: usize,
@@ -56,7 +56,7 @@ impl Game {
         width: usize,
         height: usize,
         queue_size: usize,
-        mut selector: Box<dyn FnMut() -> Shape>,
+        mut selector: Box<dyn FnMut() -> BlockKind>,
     ) -> Self {
         if width < 4 {
             panic!("not enough width")
@@ -266,7 +266,7 @@ impl Game {
         }
 
         for pos in self.tetrimino.blocks() {
-            self.field.set(pos, self.tetrimino.color());
+            self.field.set(pos, self.tetrimino.kind());
         }
         if self.tetrimino.bottom() < 0 {
             self.is_end = true;
@@ -289,7 +289,7 @@ impl Game {
             return;
         }
 
-        let new_held = Tetrimino::new(self.tetrimino.shape()).move_to((0, 0));
+        let new_held = Tetrimino::new(self.tetrimino.kind()).move_to((0, 0));
         self.tetrimino = if let Some(current_held) = self.held.clone() {
             current_held
         } else {

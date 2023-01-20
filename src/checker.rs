@@ -1,6 +1,6 @@
 use std::collections::{HashSet, VecDeque};
 
-use crate::field::Field;
+use crate::field::{Cell, Field};
 use crate::tetrimino::Tetrimino;
 
 /// Checks the state of a tetrimino, for example whether it touches to another block.
@@ -11,7 +11,7 @@ impl<'game> Checker<'game> {
         self.1
             .blocks()
             .iter()
-            .any(|pos| self.0.get_color(map(pos)) != Some(""))
+            .any(|pos| self.0.get_cell(map(pos)) != Cell::Empty)
     }
 
     /// Returns true if there are the border or other blocks on the left side of the tetrimino.
