@@ -47,7 +47,7 @@ fn height_must_be_1_or_more() {
 fn set_empty_string_to_every_cells() {
     let game = make_game();
     let field = game.field();
-    assert_eq!(field.get_color((1, 2)), Cell::Empty);
+    assert_eq!(field.get_cell((1, 2)), Cell::Empty);
 }
 
 #[test]
@@ -55,21 +55,21 @@ fn return_color_for_saved_blocks() {
     let mut game = make_game();
     game.hard_drop();
     game.save();
-    assert_eq!(game.field().get_color((4, 19)), Cell::Block("purple"))
+    assert_eq!(game.field().get_cell((4, 19)), Cell::Block("purple"))
 }
 
 #[test]
 fn do_not_panic_for_outside_points() {
     let game = make_game();
     let field = game.field();
-    assert_eq!(field.get_color((-1, 2)), Cell::Outside);
+    assert_eq!(field.get_cell((-1, 2)), Cell::Outside);
 }
 
 #[test]
 fn field_includes_points_above_the_visible_area() {
     let game = make_game();
     let field = game.field();
-    assert_eq!(field.get_color((1, -2)), Cell::Empty);
+    assert_eq!(field.get_cell((1, -2)), Cell::Empty);
 }
 
 #[test]

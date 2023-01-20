@@ -37,7 +37,7 @@ impl Field {
 
     /// Get the color at the given position. If there are no blocks, returns an
     /// empty string. If the position is out of this field, returns `None`.
-    pub fn get_color(&self, (x, y): (isize, isize)) -> Cell {
+    pub fn get_cell(&self, (x, y): (isize, isize)) -> Cell {
         let width = self.width() as isize;
         let height_min = -(HEIGHT_NEG as isize);
         let height_max = self.height() as isize;
