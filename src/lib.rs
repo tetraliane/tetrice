@@ -31,7 +31,7 @@ use std::collections::VecDeque;
 
 pub use checker::Checker;
 pub use field::{Cell, Field};
-pub use tetrimino::{Shape, Tetrimino};
+pub use tetrimino::{BlockKind, Tetrimino};
 
 /// A game manager.
 ///
@@ -42,7 +42,7 @@ pub struct Game {
     tetrimino: Tetrimino,
     queue: VecDeque<Tetrimino>,
     held: Option<Tetrimino>,
-    selector: Box<dyn FnMut() -> Shape>,
+    selector: Box<dyn FnMut() -> BlockKind>,
     can_hold: bool,
     is_end: bool,
     removed_lines: usize,
@@ -56,7 +56,7 @@ impl Game {
         width: usize,
         height: usize,
         queue_size: usize,
-        mut selector: Box<dyn FnMut() -> Shape>,
+        mut selector: Box<dyn FnMut() -> BlockKind>,
     ) -> Self {
         if width < 4 {
             panic!("not enough width")
@@ -266,7 +266,7 @@ impl Game {
         }
 
         for pos in self.tetrimino.blocks() {
-            self.field.set(pos, self.tetrimino.shape());
+            self.field.set(pos, self.tetrimino.kind());
         }
         if self.tetrimino.bottom() < 0 {
             self.is_end = true;
@@ -289,7 +289,7 @@ impl Game {
             return;
         }
 
-        let new_held = Tetrimino::new(self.tetrimino.shape()).move_to((0, 0));
+        let new_held = Tetrimino::new(self.tetrimino.kind()).move_to((0, 0));
         self.tetrimino = if let Some(current_held) = self.held.clone() {
             current_held
         } else {

@@ -1,4 +1,4 @@
-use crate::Shape;
+use crate::BlockKind;
 
 const HEIGHT_NEG: usize = 7;
 
@@ -52,10 +52,10 @@ impl Field {
         }
     }
 
-    pub(crate) fn set(&mut self, (x, y): (isize, isize), shape: Shape) {
+    pub(crate) fn set(&mut self, (x, y): (isize, isize), kind: BlockKind) {
         let x = x as usize;
         let y = (y + HEIGHT_NEG as isize) as usize;
-        self.state[y][x] = Cell::Block(shape);
+        self.state[y][x] = Cell::Block(kind);
     }
 
     pub(crate) fn remove_filled_lines(&mut self) -> usize {
@@ -77,7 +77,7 @@ impl Field {
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Cell {
     /// Indicates there is a block in the cell. The shape is included as the value.
-    Block(Shape),
+    Block(BlockKind),
     /// Indicates there is no block in the cell.
     Empty,
     /// Indicates the specified cell is out of the field.
