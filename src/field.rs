@@ -35,8 +35,8 @@ impl Field {
         self.state.len() - HEIGHT_NEG
     }
 
-    /// Get the color at the given position. If there are no blocks, returns an
-    /// empty string. If the position is out of this field, returns `None`.
+    /// Get the color at the given position. If there are no blocks, returns
+    /// `Cell::None`. If the position is out of this field, returns `Cell::Outside`.
     pub fn get_cell(&self, (x, y): (isize, isize)) -> Cell {
         let width = self.width() as isize;
         let height_min = -(HEIGHT_NEG as isize);
@@ -75,9 +75,13 @@ impl Field {
     }
 }
 
+/// A state of cells in the field.
 #[derive(Debug, PartialEq)]
 pub enum Cell {
-    Empty,
+    /// Indicates there is a block in the cell. The color is included as the value.
     Block(&'static str),
+    /// Indicates there is no block in the cell.
+    Empty,
+    /// Indicates the specified cell is out of the field.
     Outside,
 }

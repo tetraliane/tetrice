@@ -19,8 +19,8 @@
 //!    }
 //!    ```
 
-mod field;
 mod checker;
+mod field;
 mod tetrimino;
 
 #[cfg(test)]
@@ -29,8 +29,8 @@ mod tests;
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 
-pub use field::Field;
 pub use checker::Checker;
+pub use field::{Cell, Field};
 pub use tetrimino::{Shape, Tetrimino};
 
 /// A game manager.
