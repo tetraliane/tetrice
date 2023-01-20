@@ -37,13 +37,20 @@ impl Field {
 
     /// Get the color at the given position. If there are no blocks, returns an
     /// empty string. If the position is out of this field, returns `None`.
-    pub fn get_color(&self, (x, y): (isize, isize)) -> Option<&str> {
-        if x < 0 || y < -(HEIGHT_NEG as isize) {
-            None
-        } else {
+    pub fn get_color(&self, (x, y): (isize, isize)) -> Cell {
+        let width = self.width() as isize;
+        let height_min = -(HEIGHT_NEG as isize);
+        let height_max = self.height() as isize;
+        if (0..width).contains(&x) && (height_min..height_max).contains(&y) {
             let x = x as usize;
             let y = (y + HEIGHT_NEG as isize) as usize;
-            self.state.get(y).and_then(|row| row.get(x).map(|c| *c))
+            if self.state[y][x] == "" {
+                Cell::Empty
+            } else {
+                Cell::Block(self.state[y][x])
+            }
+        } else {
+            Cell::Outside
         }
     }
 
@@ -66,4 +73,11 @@ impl Field {
 
         count
     }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Cell {
+    Empty,
+    Block(&'static str),
+    Outside,
 }
