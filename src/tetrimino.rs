@@ -15,7 +15,8 @@ impl Tetrimino {
         }
     }
 
-    pub(crate) fn shape(&self) -> Shape {
+    /// Get the shape.
+    pub fn shape(&self) -> Shape {
         self.shape
     }
 
@@ -24,20 +25,6 @@ impl Tetrimino {
         self.shape
             .blocks(self.rot)
             .map(|(x, y)| (x as isize + self.pos.0, y as isize + self.pos.1))
-    }
-
-    /// Get the color.
-    ///
-    /// The color is determined by the shape:
-    /// - O-tetrimino → yellow
-    /// - I-tetrimino → lightblue
-    /// - Z-tetrimino → red,
-    /// - S-tetrimino → green,
-    /// - L-tetrimino → blue,
-    /// - T-tetrimino → purple,
-    /// - J-tetrimino → orange,
-    pub fn color(&self) -> &'static str {
-        self.shape.color()
     }
 
     /// Get the width.
@@ -196,7 +183,7 @@ impl Shape {
         self.data().0[rot]
     }
 
-    fn color(&self) -> &'static str {
+    pub(crate) fn color(&self) -> &'static str {
         self.data().1
     }
 }

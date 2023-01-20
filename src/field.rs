@@ -1,3 +1,5 @@
+use crate::Shape;
+
 const HEIGHT_NEG: usize = 7;
 
 /// A game field.
@@ -62,10 +64,10 @@ impl Field {
         }
     }
 
-    pub(crate) fn set(&mut self, (x, y): (isize, isize), color: &'static str) {
+    pub(crate) fn set(&mut self, (x, y): (isize, isize), shape: Shape) {
         let x = x as usize;
         let y = (y + HEIGHT_NEG as isize) as usize;
-        self.state[y][x] = Cell::Block(color);
+        self.state[y][x] = Cell::Block(shape.color());
     }
 
     pub(crate) fn remove_filled_lines(&mut self) -> usize {

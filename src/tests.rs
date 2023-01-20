@@ -78,7 +78,7 @@ fn create_a_tetrimino() {
     let tetrimino = game.tetrimino();
     // Locate the tetrimino at the center above the field
     assert_eq!(game.tetrimino(), &Tetrimino::new(Shape::T).move_to((3, -2)));
-    assert_eq!(tetrimino.color(), "purple");
+    assert_eq!(tetrimino.shape(), Shape::T);
 }
 
 #[test]
