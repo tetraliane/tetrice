@@ -90,7 +90,7 @@ impl Game {
     fn init_pos(&mut self) {
         let t = self.tetrimino.move_to((
             (self.field.width() - self.tetrimino.width()) as isize / 2,
-            -1 * self.tetrimino.height() as isize,
+            -(self.tetrimino.height() as isize),
         ));
         let lowest = (0..5)
             .map(|dist_up| t.move_up(dist_up))
@@ -173,7 +173,7 @@ impl Game {
     /// and the field anymore. If even one of the four blocks is saved in the
     /// visible area, the game continues.
     pub fn is_end(&self) -> bool {
-        return self.is_end;
+        self.is_end
     }
 
     /// Get the number of lines removed in this game.
@@ -330,11 +330,9 @@ fn point_is_prior(point: &(isize, isize), other: &(isize, isize)) -> Ordering {
         } else {
             Ordering::Less
         }
+    } else if dist1 > dist2 {
+        Ordering::Greater
     } else {
-        if dist1 > dist2 {
-            Ordering::Greater
-        } else {
-            Ordering::Less
-        }
+        Ordering::Less
     }
 }

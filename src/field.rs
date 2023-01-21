@@ -62,7 +62,7 @@ impl Field {
             .state
             .iter()
             .filter(|line| !line.iter().all(|cell| *cell != Cell::Empty))
-            .map(|line| line.clone())
+            .cloned()
             .collect();
         let count = self.state.len() - lines_not_filled.len();
 
@@ -89,7 +89,7 @@ impl std::fmt::Debug for Field {
 }
 
 /// A state of cells in the field.
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Cell {
     /// Indicates there is a block in the cell. The kind is included as the value.
     Block(BlockKind),
