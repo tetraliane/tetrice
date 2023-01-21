@@ -62,7 +62,7 @@ impl Field {
             .state
             .iter()
             .filter(|line| !line.iter().all(|cell| *cell != Cell::Empty))
-            .map(|line| line.clone())
+            .cloned()
             .collect();
         let count = self.state.len() - lines_not_filled.len();
 
