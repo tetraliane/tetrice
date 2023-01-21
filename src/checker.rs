@@ -7,7 +7,7 @@ use crate::tetrimino::Tetrimino;
 pub struct Checker<'game>(pub &'game Field, pub &'game Tetrimino);
 
 impl<'game> Checker<'game> {
-    fn block_existence(&self, map: Box<dyn Fn(&(isize, isize)) -> (isize, isize)>) -> bool {
+    fn block_existence(&self, map: impl Fn(&(isize, isize)) -> (isize, isize)) -> bool {
         self.1
             .blocks()
             .iter()
@@ -16,23 +16,23 @@ impl<'game> Checker<'game> {
 
     /// Returns true if there are the border or other blocks on the left side of the tetrimino.
     pub fn touch_left(&self) -> bool {
-        self.block_existence(Box::new(|(x, y)| (x - 1, *y)))
+        self.block_existence(|(x, y)| (x - 1, *y))
     }
 
     /// Same as `touch_left` but checks the right side.
     pub fn touch_right(&self) -> bool {
-        self.block_existence(Box::new(|(x, y)| (x + 1, *y)))
+        self.block_existence(|(x, y)| (x + 1, *y))
     }
 
     /// Same as `touch_left` but checks the bottom.
     pub fn touch_down(&self) -> bool {
-        self.block_existence(Box::new(|(x, y)| (*x, y + 1)))
+        self.block_existence(|(x, y)| (*x, y + 1))
     }
 
     /// Returns true if the tetrimino overlaps to other blocks, or if any
     /// blocks of the tetrimino is outside the field.
     pub fn overlap(&self) -> bool {
-        self.block_existence(Box::new(|p| *p))
+        self.block_existence(|p| *p)
     }
 
     /// Returns true if `start` can reach the tetrimino of `self`. The route
