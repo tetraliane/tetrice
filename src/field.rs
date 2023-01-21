@@ -89,7 +89,7 @@ impl std::fmt::Debug for Field {
 }
 
 /// A state of cells in the field.
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Cell {
     /// Indicates there is a block in the cell. The kind is included as the value.
     Block(BlockKind),
