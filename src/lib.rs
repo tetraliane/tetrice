@@ -5,7 +5,7 @@
 //! 1. Install this crate.
 //! 2. Make a block kind selector.
 //!    ```
-//!    use tetris::BlockKind;
+//!    use tetrice::BlockKind;
 //!
 //!    fn selector() -> BlockKind {
 //!        // Return one of the kinds (probably you want to select randomly)
@@ -14,8 +14,8 @@
 //!    ```
 //! 3. Create a game.
 //!    ```
-//!    use tetris::Game;
-//!    # use tetris::BlockKind;
+//!    use tetrice::Game;
+//!    # use tetrice::BlockKind;
 //!    # fn selector() -> BlockKind { BlockKind::T }
 //!
 //!    fn main() {
