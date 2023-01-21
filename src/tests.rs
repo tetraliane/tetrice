@@ -484,7 +484,14 @@ fn make_list_of_all_kinds() {
 
 #[test]
 fn implement_debug() {
-    format!("{:?}", BlockKind::T);
-    format!("{:?}", Tetrimino::new(BlockKind::T));
-    format!("{:?}", Field::new(10, 20));
+    assert_eq!(format!("{:?}", BlockKind::T), "T");
+    assert_eq!(
+        format!("{:?}", Tetrimino::new(BlockKind::T)),
+        "Tetrimino { kind: T, rot: 0, pos: (0, 0) }"
+    );
+    assert_eq!(format!("{:?}", Cell::Block(BlockKind::T)), "Block(T)");
+    assert_eq!(
+        format!("{:?}", Field::new(10, 20)),
+        ["|__________|\n"; 20].join("")
+    );
 }

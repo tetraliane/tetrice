@@ -5,7 +5,6 @@ const HEIGHT_NEG: usize = 7;
 /// A game field.
 ///
 /// This consists of the visible (y>0) and non-visible (y<0) areas.
-#[derive(Debug)]
 pub struct Field {
     state: Vec<Vec<Cell>>,
 }
@@ -70,6 +69,22 @@ impl Field {
         self.state = [vec![vec![Cell::Empty; 10]; count], lines_not_filled].concat();
 
         count
+    }
+}
+
+impl std::fmt::Debug for Field {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.as_vec().iter().try_for_each(|row| {
+            write!(f, "|").and_then(|()| {
+                row.iter()
+                    .try_for_each(|cell| match cell {
+                        Cell::Block(kind) => kind.fmt(f),
+                        Cell::Empty => write!(f, "_"),
+                        Cell::Outside => write!(f, " "),
+                    })
+                    .and_then(|()| writeln!(f, "|"))
+            })
+        })
     }
 }
 
