@@ -7,7 +7,7 @@ This library provides the core functions of Tetris.
 1. Install this crate.
 2. Make a block kind selector.
    ```rust
-   use tetris::BlockKind;
+   use tetrice::BlockKind;
 
    fn selector() -> BlockKind {
        // Return one of the kinds (probably you want to select randomly)
@@ -15,7 +15,7 @@ This library provides the core functions of Tetris.
    ```
 3. Create a game.
    ```rust
-   use tetris::Game;
+   use tetrice::Game;
 
    fn main() {
        // Create a game which has a 10x20 field and provides 3 next tetriminos
