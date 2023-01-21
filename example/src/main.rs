@@ -1,5 +1,5 @@
 use rand::{prelude::thread_rng, Rng};
-use tetris::{BlockKind, Game};
+use tetrice::{BlockKind, Game};
 
 fn selector() -> BlockKind {
     BlockKind::all_as_array()[thread_rng().gen_range(0..7)]
