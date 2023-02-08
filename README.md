@@ -26,6 +26,4 @@ This library provides the core functions of Tetris.
 
 # Documentation
 
-```shell
-cargo doc --package tetris
-```
+See [docs.rs](https://docs.rs/tetrice/latest/tetrice/).
