@@ -1,4 +1,4 @@
-# tetris-core
+# tetrice
 
 This library provides the core functions of Tetris.
 
